@@ -1,117 +1,139 @@
 # CineBlock Frontend
 
-React frontend for CineBlock - Tokenized Film Investment on Bitcoin L2 (Stacks).
-
-## Overview
-
-CineBlock enables users to invest in tokenized film projects using the Stacks blockchain, secured by Bitcoin.
+A Next.js 15 application for CineBlock - a tokenized film investment platform on Bitcoin L2 (Stacks).
 
 ## Tech Stack
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **@stacks/connect** - Wallet connection
-- **React Query** - Server state management
-- **React Router** - Navigation
+- **Framework**: Next.js 15 with App Router
+- **React**: React 19
+- **Styling**: Tailwind CSS v4
+- **UI Components**: Radix UI + shadcn/ui
+- **Blockchain**: Stacks (Bitcoin L2)
+- **Wallet**: @stacks/connect
+- **State Management**: TanStack Query (React Query)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
-- Stacks wallet (Leather or Xverse)
 
 ### Installation
 
 ```bash
-cd frontend
+# Install dependencies
 npm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Update .env.local with your configuration
+```
+
+### Environment Variables
+
+```env
+# Stacks Network Configuration
+NEXT_PUBLIC_STACKS_NETWORK=testnet
+
+# CineBlock Contract Address (after deployment)
+NEXT_PUBLIC_CONTRACT_ADDRESS=
 ```
 
 ### Development
 
 ```bash
+# Start development server (with Turbopack)
 npm run dev
+
+# Type checking
+npm run typecheck
+
+# Linting
+npm run lint
+
+# Format code
+npm run format:write
 ```
 
-The app will open at `http://localhost:5173`
-
-### Build
+### Production
 
 ```bash
+# Build for production
 npm run build
+
+# Start production server
+npm run start
 ```
 
 ## Project Structure
 
 ```
 frontend/
-├── components/          # Reusable UI components
-│   └── ui/             # Base UI components (shadcn)
-├── context/            # React contexts
-│   ├── DemoStore.tsx   # Demo mode state
-│   └── StacksWalletContext.tsx  # Wallet connection
-├── pages/              # Route pages
-│   ├── Films.tsx       # Browse films
-│   ├── Wallet.tsx      # Wallet management
-│   ├── Profile.tsx     # User profile
-│   ├── Onboarding.tsx  # Welcome flow
-│   └── ConnectWallet.tsx
-├── types/              # TypeScript types
-├── utils/              # Utility functions
-├── lib/                # Library utilities
-├── assets/             # Static assets
-├── App.tsx             # Main app component
-├── main.tsx            # Entry point
-├── index.css           # Global styles
-└── constants.ts        # App constants
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (app)/             # Authenticated routes with nav
+│   │   │   ├── films/
+│   │   │   ├── wallet/
+│   │   │   └── profile/
+│   │   ├── onboarding/
+│   │   ├── connect-wallet/
+│   │   ├── contract-tester/   # Development/debug page
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── providers.tsx
+│   ├── components/
+│   │   ├── ui/               # shadcn/ui components
+│   │   └── TabNavigation.tsx
+│   ├── context/
+│   │   ├── DemoStore.tsx
+│   │   └── StacksWalletContext.tsx
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── styles/
+│   │   └── globals.css
+│   ├── types/
+│   │   └── index.ts
+│   ├── utils/
+│   │   ├── contractCalls.ts
+│   │   ├── contractConfig.ts
+│   │   └── stacksApi.ts
+│   ├── config.ts
+│   ├── constants.ts
+│   └── env.js
+├── public/
+│   ├── icon.png
+│   ├── apple-touch-icon.png
+│   └── manifest.webmanifest
+├── next.config.js
+├── tailwind.config.js
+├── tsconfig.json
+└── package.json
 ```
 
 ## Features
 
-- **Stacks Wallet Integration** - Connect with Leather or Xverse wallet
-- **Browse Films** - Discover film investment opportunities
-- **Investment Tracking** - View your portfolio and holdings
-- **Demo Mode** - Explore the app without connecting a wallet
+- **Film Investment**: Browse and invest in tokenized film projects
+- **USDCx Integration**: Invest using Circle's bridged stablecoin
+- **Wallet Management**: Connect Stacks wallet, view balances
+- **Demo Mode**: Explore the app without a wallet
+- **Contract Tester**: Development tool for smart contract interaction
 
-## Environment Variables
+## Scripts
 
-Create a `.env` file:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server with Turbopack |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript type checking |
+| `npm run format:write` | Format code with Prettier |
 
-```env
-VITE_STACKS_NETWORK=testnet
-VITE_CONTRACT_ADDRESS=your_contract_address
-```
+## Learn More
 
-## Wallet Connection
-
-The app supports Stacks wallet connection via `@stacks/connect`:
-
-```tsx
-import { useStacksWallet } from "@/context/StacksWalletContext"
-
-function MyComponent() {
-  const { isConnected, address, connect, disconnectWallet } = useStacksWallet()
-  
-  return isConnected ? (
-    <p>Connected: {address}</p>
-  ) : (
-    <button onClick={connect}>Connect Wallet</button>
-  )
-}
-```
-
-## Styling
-
-Uses Tailwind CSS with a custom orange/amber theme inspired by Bitcoin:
-
-- **Primary**: Orange (#f97316)
-- **Background**: Slate dark theme
-- **Typography**: Light text on dark backgrounds
-
-## License
-
-MIT
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Stacks Documentation](https://docs.stacks.co)
+- [Tailwind CSS](https://tailwindcss.com)
+- [shadcn/ui](https://ui.shadcn.com)
