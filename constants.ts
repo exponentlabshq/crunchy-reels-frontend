@@ -4,7 +4,7 @@ export const IS_MAINNET = NETWORK === "mainnet"
 
 // Contract addresses - update these after deployment
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS ?? ""
-export const CONTRACT_NAME = "cineblock-nft"
+export const CONTRACT_NAME = "cineblock"
 
 // App configuration
 export const APP_NAME = "CineBlock"

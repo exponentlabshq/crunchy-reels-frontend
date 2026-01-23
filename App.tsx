@@ -5,6 +5,7 @@ import Wallet from "./pages/Wallet"
 import Profile from "./pages/Profile"
 import Onboarding from "./pages/Onboarding"
 import ConnectWallet from "./pages/ConnectWallet"
+import ContractTester from "./pages/ContractTester"
 import "./index.css"
 import { useEffect } from "react"
 
@@ -20,6 +21,8 @@ function App() {
           <Route path="/" element={<Navigate to="/onboarding" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/connect-wallet" element={<ConnectWallet />} />
+          {/* Hidden contract tester for development/debugging */}
+          <Route path="/contract-tester" element={<ContractTester />} />
           <Route
             path="/*"
             element={
