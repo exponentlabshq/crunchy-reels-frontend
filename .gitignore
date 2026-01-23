@@ -1,0 +1,38 @@
+# Aptos related files
+.aptos
+.env
+contract/build
+
+# Node and Vite related files
+node_modules
+dist
+build
+*.local
+package-lock.json
+pnpm-lock.yaml
+
+# Vite specific
+.vite
+*.cache
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+dev-dist
