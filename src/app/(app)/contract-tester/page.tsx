@@ -15,6 +15,9 @@ import {
   CheckCircle,
   DollarSign,
   Film,
+  Sparkles,
+  ArrowDownToLine,
+  Banknote,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useStacksWallet } from "@/context/StacksWalletContext";
@@ -50,6 +53,9 @@ import {
   closeFilmFunding,
   transferUsdcx,
   setUsdcxContract,
+  depositRevenue,
+  claimRevenue,
+  withdrawAndClaim,
 } from "@/utils/contractCalls";
 import { USDCX } from "@/utils/contractConfig";
 
@@ -85,6 +91,7 @@ export default function ContractTesterPage() {
     adminAddress: "",
     usdcxAmount: "100",
     usdcxRecipient: "",
+    revenueAmount: "1000", // Revenue to deposit
   });
 
   // USDCx contract config state
@@ -452,6 +459,128 @@ export default function ContractTesterPage() {
                 </button>
               </div>
 
+              {/* Revenue Functions */}
+              <div className="mt-3 pt-3 border-t border-background-300">
+                <p className="text-[10px] text-typography-500 mb-1.5 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-emerald-500" /> Revenue Queries
+                </p>
+                
+                {/* Get Film Revenue */}
+                <div className="flex gap-1.5 mb-2">
+                  <input
+                    type="number"
+                    value={writeForm.filmId}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, filmId: e.target.value }))}
+                    placeholder="Film ID"
+                    className={`${inputClass} w-20`}
+                  />
+                  <button
+                    onClick={() =>
+                      handleApiCall(async () => {
+                        const result = await callReadOnlyFunction(
+                          CINEBLOCK_ADDRESS,
+                          CINEBLOCK_NAME,
+                          "get-film-revenue",
+                          CINEBLOCK_ADDRESS,
+                          [`0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`]
+                        );
+                        if (result.okay && result.result) {
+                          const decoded = cvToJSON(deserializeCV(result.result));
+                          return { 
+                            ...result, 
+                            decoded,
+                            formatted: {
+                              "total-deposited": formatUSDCx(BigInt(decoded?.["total-deposited"]?.value ?? 0)),
+                              "total-claimed": formatUSDCx(BigInt(decoded?.["total-claimed"]?.value ?? 0)),
+                            }
+                          };
+                        }
+                        return result;
+                      })
+                    }
+                    className={btnGreen}
+                    disabled={loading || !CINEBLOCK_ADDRESS}
+                  >
+                    Film Revenue
+                  </button>
+                </div>
+
+                {/* Get Claimable Revenue */}
+                <div className="flex gap-1.5 mb-2">
+                  <button
+                    onClick={() =>
+                      handleApiCall(async () => {
+                        const addr = writeForm.adminAddress || address;
+                        if (!addr) throw new Error("No address");
+                        const result = await callReadOnlyFunction(
+                          CINEBLOCK_ADDRESS,
+                          CINEBLOCK_NAME,
+                          "get-claimable-revenue",
+                          CINEBLOCK_ADDRESS,
+                          [
+                            `0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`,
+                            `0x${serializeArg(principalCV(addr))}`,
+                          ]
+                        );
+                        if (result.okay && result.result) {
+                          const decoded = cvToJSON(deserializeCV(result.result));
+                          return { 
+                            ...result, 
+                            decoded,
+                            claimable_usdcx: formatUSDCx(BigInt(decoded?.value ?? 0)),
+                          };
+                        }
+                        return result;
+                      })
+                    }
+                    className={`${btnGreen} flex-1`}
+                    disabled={loading || !CINEBLOCK_ADDRESS}
+                  >
+                    Claimable Revenue
+                  </button>
+                </div>
+
+                {/* Preview Withdrawal */}
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() =>
+                      handleApiCall(async () => {
+                        const addr = writeForm.adminAddress || address;
+                        if (!addr) throw new Error("No address");
+                        const result = await callReadOnlyFunction(
+                          CINEBLOCK_ADDRESS,
+                          CINEBLOCK_NAME,
+                          "preview-withdrawal",
+                          CINEBLOCK_ADDRESS,
+                          [
+                            `0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`,
+                            `0x${serializeArg(principalCV(addr))}`,
+                          ]
+                        );
+                        if (result.okay && result.result) {
+                          const decoded = cvToJSON(deserializeCV(result.result));
+                          return { 
+                            ...result, 
+                            decoded,
+                            formatted: {
+                              "token-balance": formatUSDCx(BigInt(decoded?.["token-balance"]?.value ?? 0)),
+                              "principal-return": formatUSDCx(BigInt(decoded?.["principal-return"]?.value ?? 0)),
+                              "pending-earnings": formatUSDCx(BigInt(decoded?.["pending-earnings"]?.value ?? 0)),
+                              "total-payout": formatUSDCx(BigInt(decoded?.["total-payout"]?.value ?? 0)),
+                            }
+                          };
+                        }
+                        return result;
+                      })
+                    }
+                    className={`${btnSecondary} flex-1`}
+                    disabled={loading || !CINEBLOCK_ADDRESS}
+                  >
+                    Preview Withdraw
+                  </button>
+                </div>
+              </div>
+
               {/* Custom Read Call */}
               <div className="mt-3 pt-3 border-t border-background-300">
                 <p className="text-[10px] text-typography-500 mb-1.5">Custom Call</p>
@@ -685,6 +814,105 @@ export default function ContractTesterPage() {
                 >
                   Close Funding
                 </button>
+              </div>
+            </div>
+
+            {/* Revenue Distribution (Admin) */}
+            <div className="bg-linear-to-r from-amber-500/10 to-yellow-500/10 rounded-xl p-3 border border-amber-500/30">
+              <h3 className="text-xs font-semibold text-typography-950 mb-2 flex items-center gap-1.5">
+                <Banknote className="w-3 h-3 text-amber-500" /> Deposit Revenue
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-600 text-[9px] font-bold rounded ml-auto">ADMIN</span>
+              </h3>
+              <p className="text-[10px] text-typography-500 mb-2">
+                Distribute film earnings to token holders. Revenue is split proportionally.
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 mb-2">
+                <div>
+                  <label className={labelClass}>Film ID</label>
+                  <input
+                    type="number"
+                    value={writeForm.filmId}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, filmId: e.target.value }))}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Revenue (USDCx)</label>
+                  <input
+                    type="number"
+                    value={writeForm.revenueAmount}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, revenueAmount: e.target.value }))}
+                    className={`${inputClass} font-mono`}
+                  />
+                </div>
+              </div>
+              <button
+                onClick={() =>
+                  handleContractCall(() =>
+                    depositRevenue(parseInt(writeForm.filmId), parseUSDCx(writeForm.revenueAmount), address!)
+                  )
+                }
+                className={`${btnOrange} w-full`}
+                disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+              >
+                <Send className="w-3 h-3 inline mr-1" /> Deposit ${writeForm.revenueAmount} Revenue
+              </button>
+            </div>
+
+            {/* Claim & Withdraw */}
+            <div className="bg-linear-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-3 border border-emerald-500/30">
+              <h3 className="text-xs font-semibold text-typography-950 mb-2 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-emerald-500" /> Claim & Withdraw
+              </h3>
+              
+              {/* Claim Revenue */}
+              <div className="mb-3">
+                <p className="text-[10px] text-typography-500 mb-1.5">
+                  Claim your pending revenue earnings from a film.
+                </p>
+                <div className="flex gap-1.5">
+                  <input
+                    type="number"
+                    value={writeForm.filmId}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, filmId: e.target.value }))}
+                    placeholder="Film ID"
+                    className={`${inputClass} w-20`}
+                  />
+                  <button
+                    onClick={() =>
+                      handleContractCall(() => claimRevenue(parseInt(writeForm.filmId), address!))
+                    }
+                    className={`${btnGreen} flex-1`}
+                    disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  >
+                    <DollarSign className="w-3 h-3 inline mr-1" /> Claim Revenue
+                  </button>
+                </div>
+              </div>
+
+              {/* Withdraw Position */}
+              <div className="pt-3 border-t border-emerald-500/20">
+                <p className="text-[10px] text-typography-500 mb-1.5">
+                  Close position: claims pending revenue + returns principal. Burns tokens.
+                </p>
+                <div className="flex gap-1.5">
+                  <input
+                    type="number"
+                    value={writeForm.filmId}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, filmId: e.target.value }))}
+                    placeholder="Film ID"
+                    className={`${inputClass} w-20`}
+                  />
+                  <button
+                    onClick={() =>
+                      handleContractCall(() => withdrawAndClaim(parseInt(writeForm.filmId), address!))
+                    }
+                    className={`${btnSecondary} flex-1`}
+                    disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  >
+                    <ArrowDownToLine className="w-3 h-3 inline mr-1" /> Withdraw All
+                  </button>
+                </div>
               </div>
             </div>
           </div>

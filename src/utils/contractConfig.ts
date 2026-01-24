@@ -75,7 +75,6 @@ export const CINEBLOCK_FUNCTIONS = {
   readOnly: [
     { name: "get-last-film-id", args: [] },
     { name: "get-total-usdcx-collected", args: [] },
-    { name: "get-treasury", args: [] },
     { name: "get-usdcx-contract", args: [] },
     { name: "get-film", args: ["film-id: uint"] },
     { name: "get-balance", args: ["film-id: uint", "holder: principal"] },
@@ -84,6 +83,12 @@ export const CINEBLOCK_FUNCTIONS = {
     { name: "is-admin", args: ["address: principal"] },
     { name: "preview-purchase", args: ["film-id: uint", "usdcx-amount: uint"] },
     { name: "get-portfolio-item", args: ["film-id: uint", "holder: principal"] },
+    // Revenue functions
+    { name: "get-film-revenue", args: ["film-id: uint"] },
+    { name: "get-claimable-revenue", args: ["film-id: uint", "holder: principal"] },
+    { name: "get-user-total-claimed", args: ["film-id: uint", "holder: principal"] },
+    { name: "preview-withdrawal", args: ["film-id: uint", "holder: principal"] },
+    { name: "get-user-position", args: ["film-id: uint", "holder: principal"] },
   ],
   // Public (write) functions
   public: [
@@ -130,14 +135,28 @@ export const CINEBLOCK_FUNCTIONS = {
       admin: true,
     },
     {
-      name: "set-treasury",
-      args: ["new-treasury: principal"],
-      admin: true,
-    },
-    {
       name: "set-usdcx-contract",
       args: ["new-usdcx-contract: principal"],
       admin: true,
+    },
+    // Revenue functions
+    {
+      name: "deposit-revenue",
+      args: ["film-id: uint", "amount: uint", "usdcx-token: trait"],
+      admin: true,
+      description: "Deposit film revenue for distribution to holders",
+    },
+    {
+      name: "claim-revenue",
+      args: ["film-id: uint", "usdcx-token: trait"],
+      admin: false,
+      description: "Claim accumulated revenue earnings",
+    },
+    {
+      name: "withdraw-and-claim",
+      args: ["film-id: uint", "usdcx-token: trait"],
+      admin: false,
+      description: "Withdraw position: claims pending revenue + returns principal",
     },
   ],
 };
@@ -147,12 +166,16 @@ export const CINEBLOCK_MAPS = [
   { name: "token-balances", keyType: "{ film-id: uint, holder: principal }" },
   { name: "film-holder-count", keyType: "{ film-id: uint }" },
   { name: "admins", keyType: "{ admin: principal }" },
+  // Revenue distribution maps
+  { name: "film-revenue", keyType: "{ film-id: uint }" },
+  { name: "dividend-per-token", keyType: "{ film-id: uint }" },
+  { name: "user-dividend-debt", keyType: "{ film-id: uint, holder: principal }" },
+  { name: "user-total-claimed", keyType: "{ film-id: uint, holder: principal }" },
 ];
 
 export const CINEBLOCK_VARS = [
   { name: "last-film-id", type: "uint" },
   { name: "total-usdcx-collected", type: "uint" },
-  { name: "treasury", type: "principal" },
   { name: "usdcx-contract-address", type: "(optional principal)" },
 ];
 

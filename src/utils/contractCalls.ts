@@ -130,16 +130,6 @@ export async function getTotalUsdcxCollected() {
   });
 }
 
-export async function getTreasury() {
-  return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
-    functionName: "get-treasury",
-    functionArgs: [],
-    senderAddress: CINEBLOCK_ADDRESS,
-  });
-}
-
 export async function getUsdcxContract() {
   return readContract({
     contractAddress: CINEBLOCK_ADDRESS,
@@ -215,6 +205,60 @@ export async function getPortfolioItem(filmId: number, holder: string) {
     contractAddress: CINEBLOCK_ADDRESS,
     contractName: CINEBLOCK_NAME,
     functionName: "get-portfolio-item",
+    functionArgs: [uintCV(filmId), principalCV(holder)],
+    senderAddress: CINEBLOCK_ADDRESS,
+  });
+}
+
+// ============================================
+// REVENUE & WITHDRAWAL - READ ONLY
+// ============================================
+
+export async function getFilmRevenue(filmId: number) {
+  return readContract({
+    contractAddress: CINEBLOCK_ADDRESS,
+    contractName: CINEBLOCK_NAME,
+    functionName: "get-film-revenue",
+    functionArgs: [uintCV(filmId)],
+    senderAddress: CINEBLOCK_ADDRESS,
+  });
+}
+
+export async function getClaimableRevenue(filmId: number, holder: string) {
+  return readContract({
+    contractAddress: CINEBLOCK_ADDRESS,
+    contractName: CINEBLOCK_NAME,
+    functionName: "get-claimable-revenue",
+    functionArgs: [uintCV(filmId), principalCV(holder)],
+    senderAddress: CINEBLOCK_ADDRESS,
+  });
+}
+
+export async function getUserTotalClaimed(filmId: number, holder: string) {
+  return readContract({
+    contractAddress: CINEBLOCK_ADDRESS,
+    contractName: CINEBLOCK_NAME,
+    functionName: "get-user-total-claimed",
+    functionArgs: [uintCV(filmId), principalCV(holder)],
+    senderAddress: CINEBLOCK_ADDRESS,
+  });
+}
+
+export async function previewWithdrawal(filmId: number, holder: string) {
+  return readContract({
+    contractAddress: CINEBLOCK_ADDRESS,
+    contractName: CINEBLOCK_NAME,
+    functionName: "preview-withdrawal",
+    functionArgs: [uintCV(filmId), principalCV(holder)],
+    senderAddress: CINEBLOCK_ADDRESS,
+  });
+}
+
+export async function getUserPosition(filmId: number, holder: string) {
+  return readContract({
+    contractAddress: CINEBLOCK_ADDRESS,
+    contractName: CINEBLOCK_NAME,
+    functionName: "get-user-position",
     functionArgs: [uintCV(filmId), principalCV(holder)],
     senderAddress: CINEBLOCK_ADDRESS,
   });
@@ -539,5 +583,104 @@ export async function transferUsdcx(
   if (!txid) throw new Error("No transaction ID returned");
 
   console.log("🎉 Transaction broadcast:", txid);
+  return txid;
+}
+
+// ============================================
+// REVENUE & WITHDRAWAL - WRITE CALLS
+// ============================================
+
+// Claim accumulated revenue earnings for a film
+export async function claimRevenue(
+  filmId: number,
+  userAddress: string
+): Promise<string> {
+  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+
+  const functionArgs = [
+    Cl.uint(filmId),
+    Cl.contractPrincipal(USDCX_ADDRESS, USDCX_NAME),
+  ];
+
+  const res = await request("stx_callContract", {
+    contract: contractId,
+    functionName: "claim-revenue",
+    functionArgs,
+    address: userAddress,
+    network: NETWORK_ENV,
+    postConditionMode: "allow",
+  });
+
+  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+               (res as { txid?: string; transaction?: string })?.transaction;
+  if (!txid) throw new Error("No transaction ID returned");
+
+  console.log("🎉 Revenue claimed:", txid);
+  console.log("🔗 Explorer:", `https://explorer.hiro.so/txid/${txid}?chain=${NETWORK_ENV}`);
+
+  return txid;
+}
+
+// Withdraw full position: claims pending revenue + returns principal
+export async function withdrawAndClaim(
+  filmId: number,
+  userAddress: string
+): Promise<string> {
+  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+
+  const functionArgs = [
+    Cl.uint(filmId),
+    Cl.contractPrincipal(USDCX_ADDRESS, USDCX_NAME),
+  ];
+
+  const res = await request("stx_callContract", {
+    contract: contractId,
+    functionName: "withdraw-and-claim",
+    functionArgs,
+    address: userAddress,
+    network: NETWORK_ENV,
+    postConditionMode: "allow",
+  });
+
+  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+               (res as { txid?: string; transaction?: string })?.transaction;
+  if (!txid) throw new Error("No transaction ID returned");
+
+  console.log("🎉 Position closed:", txid);
+  console.log("🔗 Explorer:", `https://explorer.hiro.so/txid/${txid}?chain=${NETWORK_ENV}`);
+
+  return txid;
+}
+
+// Admin: Deposit revenue for a film (streaming earnings, etc.)
+export async function depositRevenue(
+  filmId: number,
+  amount: number,
+  userAddress: string
+): Promise<string> {
+  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+
+  const functionArgs = [
+    Cl.uint(filmId),
+    Cl.uint(amount),
+    Cl.contractPrincipal(USDCX_ADDRESS, USDCX_NAME),
+  ];
+
+  const res = await request("stx_callContract", {
+    contract: contractId,
+    functionName: "deposit-revenue",
+    functionArgs,
+    address: userAddress,
+    network: NETWORK_ENV,
+    postConditionMode: "allow",
+  });
+
+  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+               (res as { txid?: string; transaction?: string })?.transaction;
+  if (!txid) throw new Error("No transaction ID returned");
+
+  console.log("🎉 Revenue deposited:", txid);
+  console.log("🔗 Explorer:", `https://explorer.hiro.so/txid/${txid}?chain=${NETWORK_ENV}`);
+
   return txid;
 }
