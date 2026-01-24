@@ -73,18 +73,17 @@ export const USDCX_ASSET_ID = `${USDCX_CONTRACT_ID}::${USDCX_ASSET}`;
 export const CINEBLOCK_FUNCTIONS = {
   // Read-Only
   readOnly: [
-    { name: "get-last-token-id", args: [] },
     { name: "get-last-film-id", args: [] },
-    { name: "get-total-investments", args: [] },
-    { name: "get-total-usdcx-raised", args: [] },
+    { name: "get-total-usdcx-collected", args: [] },
     { name: "get-treasury", args: [] },
+    { name: "get-usdcx-contract", args: [] },
     { name: "get-film", args: ["film-id: uint"] },
-    { name: "get-token-details", args: ["token-id: uint"] },
-    { name: "get-investor-holdings", args: ["film-id: uint", "investor: principal"] },
-    { name: "get-owner", args: ["token-id: uint"] },
+    { name: "get-balance", args: ["film-id: uint", "holder: principal"] },
+    { name: "get-tokens-available", args: ["film-id: uint"] },
+    { name: "get-holder-count", args: ["film-id: uint"] },
     { name: "is-admin", args: ["address: principal"] },
-    { name: "calculate-tokens", args: ["film-id: uint", "usdcx-amount: uint"] },
-    { name: "preview-investment", args: ["film-id: uint", "usdcx-amount: uint"] },
+    { name: "preview-purchase", args: ["film-id: uint", "usdcx-amount: uint"] },
+    { name: "get-portfolio-item", args: ["film-id: uint", "holder: principal"] },
   ],
   // Public (write) functions
   public: [
@@ -92,40 +91,32 @@ export const CINEBLOCK_FUNCTIONS = {
       name: "create-film",
       args: [
         "title: string-ascii 100",
-        "director: string-ascii 100",
+        "symbol: string-ascii 10",
         "description: string-ascii 256",
-        "funding-goal: uint (USDCx)",
-        "token-price: uint (USDCx per token)",
-        "token-symbol: string-ascii 10",
+        "max-supply: uint",
       ],
       admin: true,
     },
     {
-      name: "update-film",
-      args: [
-        "film-id: uint",
-        "title: string-ascii 100",
-        "director: string-ascii 100",
-        "description: string-ascii 256",
-        "is-active: bool",
-      ],
+      name: "set-film-active",
+      args: ["film-id: uint", "is-active: bool"],
       admin: true,
     },
     {
-      name: "invest-with-usdcx",
+      name: "buy-film-tokens",
       args: ["film-id: uint", "usdcx-amount: uint", "usdcx-token: trait"],
       admin: false,
-      description: "Invest USDCx in a film project",
+      description: "Buy film tokens with USDCx (1:1 exchange)",
     },
     {
-      name: "invest-in-film",
+      name: "buy-film-tokens-demo",
       args: ["film-id: uint", "amount: uint"],
       admin: false,
-      description: "Demo investment (no token transfer)",
+      description: "Demo purchase (no USDCx transfer)",
     },
     {
-      name: "transfer",
-      args: ["token-id: uint", "sender: principal", "recipient: principal"],
+      name: "transfer-film-tokens",
+      args: ["film-id: uint", "amount: uint", "recipient: principal"],
       admin: false,
     },
     {
@@ -139,13 +130,13 @@ export const CINEBLOCK_FUNCTIONS = {
       admin: true,
     },
     {
-      name: "close-film-funding",
-      args: ["film-id: uint"],
+      name: "set-treasury",
+      args: ["new-treasury: principal"],
       admin: true,
     },
     {
-      name: "set-treasury",
-      args: ["new-treasury: principal"],
+      name: "set-usdcx-contract",
+      args: ["new-usdcx-contract: principal"],
       admin: true,
     },
   ],
@@ -153,17 +144,16 @@ export const CINEBLOCK_FUNCTIONS = {
 
 export const CINEBLOCK_MAPS = [
   { name: "films", keyType: "{ film-id: uint }" },
-  { name: "film-tokens", keyType: "{ token-id: uint }" },
-  { name: "investor-holdings", keyType: "{ film-id: uint, investor: principal }" },
+  { name: "token-balances", keyType: "{ film-id: uint, holder: principal }" },
+  { name: "film-holder-count", keyType: "{ film-id: uint }" },
   { name: "admins", keyType: "{ admin: principal }" },
 ];
 
 export const CINEBLOCK_VARS = [
-  { name: "last-token-id", type: "uint" },
   { name: "last-film-id", type: "uint" },
-  { name: "total-investments", type: "uint" },
-  { name: "total-usdcx-raised", type: "uint" },
+  { name: "total-usdcx-collected", type: "uint" },
   { name: "treasury", type: "principal" },
+  { name: "usdcx-contract-address", type: "(optional principal)" },
 ];
 
 // ============================================

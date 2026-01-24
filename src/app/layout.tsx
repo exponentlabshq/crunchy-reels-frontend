@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 
-import { type Metadata } from "next";
+import { type Metadata, type Viewport } from "next";
 import { Outfit, Space_Mono } from "next/font/google";
 
 import { Providers } from "./providers";
@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "CineBlock",
   },
+};
+
+export const viewport: Viewport = {
   themeColor: "#0f172a",
 };
 

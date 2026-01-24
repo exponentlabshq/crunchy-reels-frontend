@@ -8,7 +8,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import { AppConfig, UserSession, showConnect, disconnect } from "@stacks/connect";
+import { AppConfig, UserSession, connect as stacksConnect, disconnect } from "@stacks/connect";
 import { APP_NAME, APP_ICON, IS_MAINNET } from "@/constants";
 
 interface StacksWalletState {
@@ -45,16 +45,31 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const connect = useCallback(() => {
+  const connect = useCallback(async () => {
     setIsConnecting(true);
 
-    showConnect({
-      appDetails: {
-        name: APP_NAME,
-        icon: window.location.origin + APP_ICON,
-      },
-      redirectTo: "/",
-      onFinish: () => {
+    try {
+      const response = await stacksConnect({
+        appDetails: {
+          name: APP_NAME,
+          icon: window.location.origin + APP_ICON,
+        },
+        userSession,
+      });
+
+      // v8 returns addresses directly in response
+      console.log("Connect response:", response);
+      if (response?.addresses) {
+        const stxAddr = response.addresses.find(
+          (a: { symbol: string; address: string }) => a.symbol === "STX"
+        );
+        if (stxAddr) {
+          setAddress(stxAddr.address);
+          setStxAddress(stxAddr.address);
+          setIsConnected(true);
+        }
+      } else if (userSession.isUserSignedIn()) {
+        // Fallback to userSession if available
         const userData = userSession.loadUserData();
         const networkAddress = IS_MAINNET
           ? userData.profile.stxAddress?.mainnet
@@ -63,13 +78,12 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
         setAddress(networkAddress ?? null);
         setStxAddress(networkAddress ?? null);
         setIsConnected(true);
-        setIsConnecting(false);
-      },
-      onCancel: () => {
-        setIsConnecting(false);
-      },
-      userSession,
-    });
+      }
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+    } finally {
+      setIsConnecting(false);
+    }
   }, []);
 
   const disconnectWallet = useCallback(() => {

@@ -1,7 +1,7 @@
-import { StacksTestnet, StacksMainnet } from "@stacks/network";
+import { STACKS_TESTNET, STACKS_MAINNET } from "@stacks/network";
 import { IS_MAINNET } from "@/constants";
 
-const network = IS_MAINNET ? StacksMainnet : StacksTestnet;
+const network = IS_MAINNET ? STACKS_MAINNET : STACKS_TESTNET;
 const STACKS_API_BASE_URL = IS_MAINNET
   ? "https://api.mainnet.hiro.so"
   : "https://api.testnet.hiro.so";

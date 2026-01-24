@@ -31,31 +31,31 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {children}
           <Toaster />
           <HotToaster
-            position="top-center"
-            containerStyle={{
-              top: 20,
-              zIndex: 9999,
-            }}
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: "rgb(15, 23, 42)",
-                color: "rgb(248, 250, 252)",
-                border: "1px solid rgb(30, 41, 59)",
+          position="top-center"
+          containerStyle={{
+            top: 20,
+            zIndex: 9999,
+          }}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "rgb(15, 23, 42)",
+              color: "rgb(248, 250, 252)",
+              border: "1px solid rgb(30, 41, 59)",
+            },
+            success: {
+              iconTheme: {
+                primary: "rgb(249, 115, 22)",
+                secondary: "white",
               },
-              success: {
-                iconTheme: {
-                  primary: "rgb(249, 115, 22)",
-                  secondary: "white",
-                },
+            },
+            error: {
+              iconTheme: {
+                primary: "rgb(239, 68, 68)",
+                secondary: "white",
               },
-              error: {
-                iconTheme: {
-                  primary: "rgb(239, 68, 68)",
-                  secondary: "white",
-                },
-              },
-            }}
+            },
+          }}
           />
         </TooltipProvider>
       </QueryClientProvider>

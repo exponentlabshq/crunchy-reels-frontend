@@ -1,6 +1,6 @@
 "use client";
 
-import { Film, User, Wallet } from "lucide-react";
+import { ArrowLeftRight, Code, Film, User, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,6 +17,11 @@ const tabItems: TabItem[] = [
     icon: Film,
   },
   {
+    label: "Bridge",
+    path: "/bridge",
+    icon: ArrowLeftRight,
+  },
+  {
     label: "Wallet",
     path: "/wallet",
     icon: Wallet,
@@ -26,6 +31,11 @@ const tabItems: TabItem[] = [
     path: "/profile",
     icon: User,
   },
+  {
+    label: "Contract Tester",
+    path: "/contract-tester",
+    icon: Code,
+  }
 ];
 
 interface TabNavigationProps {

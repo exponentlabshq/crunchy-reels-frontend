@@ -1,13 +1,52 @@
 "use client";
 
-import { Copy, Wallet as WalletIcon, LogOut, Bitcoin } from "lucide-react";
+import { Copy, Wallet as WalletIcon, LogOut, Bitcoin, RefreshCw, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useStacksWallet } from "@/context/StacksWalletContext";
+import { getAccountBalances } from "@/utils/stacksApi";
+import { USDCX_ADDRESS, USDCX_NAME, USDCX_ASSET } from "@/utils/contractConfig";
+
+interface Balances {
+  stx: string;
+  usdcx: string;
+}
 
 export default function WalletPage() {
   const router = useRouter();
   const { isConnected, address, disconnectWallet } = useStacksWallet();
+  const [balances, setBalances] = useState<Balances>({ stx: "0.00", usdcx: "0.00" });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchBalances = useCallback(async () => {
+    if (!address) return;
+    
+    setIsLoading(true);
+    try {
+      const data = await getAccountBalances(address);
+      
+      // STX balance is in microSTX (6 decimals)
+      const stxBalance = data.stx?.balance ? (Number(data.stx.balance) / 1_000_000).toFixed(2) : "0.00";
+      
+      // USDCx balance - find the token in fungible_tokens (6 decimals)
+      const usdcxKey = `${USDCX_ADDRESS}.${USDCX_NAME}::${USDCX_ASSET}`;
+      const usdcxToken = data.fungible_tokens?.[usdcxKey];
+      const usdcxBalance = usdcxToken?.balance ? (Number(usdcxToken.balance) / 1_000_000).toFixed(2) : "0.00";
+      
+      setBalances({ stx: stxBalance, usdcx: usdcxBalance });
+    } catch (error) {
+      console.error("Failed to fetch balances:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      void fetchBalances();
+    }
+  }, [isConnected, address, fetchBalances]);
 
   const walletAddress = address ?? "";
 
@@ -82,19 +121,34 @@ export default function WalletPage() {
           </div>
 
           {/* Balance Display */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-typography-950 font-sans">Balances</h3>
+            <button
+              onClick={() => void fetchBalances()}
+              disabled={isLoading}
+              className="p-2 hover:bg-background-100 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 text-typography-500 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="bg-orange-500/10 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Bitcoin className="w-5 h-5 text-orange-500" />
                 <span className="text-sm text-typography-500">STX Balance</span>
               </div>
-              <p className="text-2xl font-bold text-typography-950 font-mono">0.00</p>
+              <p className="text-2xl font-bold text-typography-950 font-mono">
+                {isLoading ? "..." : balances.stx}
+              </p>
             </div>
-            <div className="bg-primary-500/10 rounded-xl p-4">
+            <div className="bg-green-500/10 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-typography-500">Film Tokens</span>
+                <DollarSign className="w-5 h-5 text-green-500" />
+                <span className="text-sm text-typography-500">USDCx Balance</span>
               </div>
-              <p className="text-2xl font-bold text-typography-950 font-mono">0</p>
+              <p className="text-2xl font-bold text-typography-950 font-mono">
+                {isLoading ? "..." : balances.usdcx}
+              </p>
             </div>
           </div>
 
