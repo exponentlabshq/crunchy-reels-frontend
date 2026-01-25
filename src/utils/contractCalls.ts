@@ -53,11 +53,11 @@ export async function callContract(params: ContractCallParams): Promise<string> 
     functionArgs: params.functionArgs,
     address: params.userAddress,
     network: NETWORK_ENV,
-    postConditionMode: params.postConditionMode || "allow",
+    postConditionMode: params.postConditionMode ?? "allow",
   });
 
-  const txid = (res as { txid?: string; transaction?: string })?.txid || 
-               (res as { txid?: string; transaction?: string })?.transaction;
+  const txid = (res as { txid?: string; transaction?: string })?.txid ?? 
+               (res as { txid?: string; transaction?: string })?.transaction ?? "";
   if (!txid) throw new Error("No transaction ID returned");
 
   console.log("🎉 Transaction broadcast:", txid);
@@ -293,7 +293,7 @@ export async function createFilm(
     postConditionMode: "deny",
   });
 
-  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+  const txid = (res as { txid?: string; transaction?: string })?.txid ??
                (res as { txid?: string; transaction?: string })?.transaction;
   if (!txid) throw new Error("No transaction ID returned");
 
@@ -322,7 +322,7 @@ export async function setFilmActive(
     postConditionMode: "deny",
   });
 
-  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+  const txid = (res as { txid?: string; transaction?: string })?.txid ??
                (res as { txid?: string; transaction?: string })?.transaction;
   if (!txid) throw new Error("No transaction ID returned");
 
@@ -355,7 +355,7 @@ export async function editFilm(
     postConditionMode: "deny",
   });
 
-  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+  const txid = (res as { txid?: string; transaction?: string })?.txid ??
                (res as { txid?: string; transaction?: string })?.transaction;
   if (!txid) throw new Error("No transaction ID returned");
 

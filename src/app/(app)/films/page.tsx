@@ -130,7 +130,7 @@ export default function FilmsPage() {
   }
 
   useEffect(() => {
-    fetchFilms();
+    void fetchFilms();
   }, []);
 
   const activeFilms = films.filter((f) => f.isActive);
@@ -148,93 +148,93 @@ export default function FilmsPage() {
 
   return (
     <div className="flex-1 overflow-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
-      <div className="py-8 px-10">
-        {/* Page Header */}
-        <div className="flex flex-col gap-2 mb-7">
+      <div className="py-4 sm:py-8 px-4 sm:px-10">
+        {/* Page Header - Compact on mobile */}
+        <div className="flex flex-col gap-1 sm:gap-2 mb-4 sm:mb-7">
           <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[38px] font-normal text-white font-display tracking-[-1px]">
+            <div className="flex flex-col gap-0.5 sm:gap-2">
+              <h1 className="text-2xl sm:text-[38px] font-normal text-white font-display tracking-[-0.5px] sm:tracking-[-1px]">
                 Film Investments
               </h1>
-              <p className="text-sm text-[#6B6B70]">
+              <p className="text-xs sm:text-sm text-[#6B6B70] hidden sm:block">
                 Browse and invest in upcoming film projects
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-[#2A2A2E] rounded-lg hover:bg-[#1A1A1D] transition-colors cursor-not-allowed" disabled>
+              <button className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border border-[#2A2A2E] rounded-lg hover:bg-[#1A1A1D] transition-colors cursor-not-allowed" disabled>
                 <SlidersHorizontal className="w-4 h-4 text-[#8B8B90]" />
-                <span className="text-[13px] font-medium text-white">Filter</span>
+                <span className="text-[13px] font-medium text-white hidden sm:inline">Filter</span>
               </button>
        
             </div>
           </div>
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2">
+          {/* Breadcrumbs - Hidden on mobile */}
+          <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs text-[#6B6B70]">Dashboard</span>
             <ChevronRight className="w-3.5 h-3.5 text-[#4A4A4E]" />
             <span className="text-xs text-white">Films</span>
           </div>
         </div>
 
-        {/* Metrics Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+        {/* Metrics Row - Compact on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-5 sm:mb-7">
           {/* Total Invested */}
-          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-5 flex flex-col gap-4">
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-lg sm:rounded-xl p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
-                Total Invested
+              <span className="text-[10px] sm:text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
+                Invested
               </span>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-500/10">
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-500/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-success-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                 <span className="text-[10px] font-medium text-success-500">Live</span>
               </div>
             </div>
-            <span className="text-[32px] font-medium font-mono text-white tracking-[-1px]">
+            <span className="text-lg sm:text-[32px] font-medium font-mono text-white tracking-[-0.5px] sm:tracking-[-1px]">
               ${isLoading ? "..." : formatUSDCx(totalFunded)}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5 text-success-500" />
               <span className="text-xs font-medium text-success-500">+12.5% this month</span>
             </div>
           </div>
 
           {/* Active Investments */}
-          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-5 flex flex-col gap-4">
-            <span className="text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
-              Active Investments
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-lg sm:rounded-xl p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-4">
+            <span className="text-[10px] sm:text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
+              Active
             </span>
-            <span className="text-[32px] font-medium font-mono text-white tracking-[-1px]">
+            <span className="text-lg sm:text-[32px] font-medium font-mono text-white tracking-[-0.5px] sm:tracking-[-1px]">
               {isLoading ? "..." : activeFilms.length}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5 text-success-500" />
               <span className="text-xs font-medium text-success-500">+2 new this week</span>
             </div>
           </div>
 
           {/* Pending Returns */}
-          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-5 flex flex-col gap-4">
-            <span className="text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
-              Pending Returns
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-lg sm:rounded-xl p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-4">
+            <span className="text-[10px] sm:text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
+              Pending
             </span>
-            <span className="text-[32px] font-medium font-mono text-white tracking-[-1px]">
+            <span className="text-lg sm:text-[32px] font-medium font-mono text-white tracking-[-0.5px] sm:tracking-[-1px]">
               ${isLoading ? "..." : formatUSDCx(Math.floor(totalFunded * 0.188))}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1">
               <Timer className="w-3.5 h-3.5 text-primary-500" />
-              <span className="text-xs font-medium text-[#ADADB0]">{filmsInProduction} films in production</span>
+              <span className="text-xs font-medium text-[#ADADB0]">{filmsInProduction} in production</span>
             </div>
           </div>
 
           {/* Total Returns */}
-          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-5 flex flex-col gap-4">
-            <span className="text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
-              Total Returns
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-lg sm:rounded-xl p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-4">
+            <span className="text-[10px] sm:text-xs font-medium text-[#6B6B70] uppercase tracking-[0.5px]">
+              Returns
             </span>
-            <span className="text-[32px] font-medium font-mono text-success-500 tracking-[-1px]">
+            <span className="text-lg sm:text-[32px] font-medium font-mono text-success-500 tracking-[-0.5px] sm:tracking-[-1px]">
               ${isLoading ? "..." : formatUSDCx(Math.floor(totalFunded * 0.387))}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5 text-success-500" />
               <span className="text-xs font-medium text-success-500">+38.7% ROI</span>
             </div>

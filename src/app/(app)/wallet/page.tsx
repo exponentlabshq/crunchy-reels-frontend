@@ -130,11 +130,11 @@ export default function WalletPage() {
           {/* Address Section */}
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium text-[#6B6B70]">Wallet Address</span>
-            <div className="flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5">
-              <span className="text-[13px] font-mono text-[#ADADB0]">{walletAddress}</span>
+            <div className="flex items-center gap-3 bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5">
+              <span className="flex-1 min-w-0 text-[13px] font-mono text-[#ADADB0] truncate">{walletAddress}</span>
               <button
                 onClick={copyWalletAddress}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#2A2A2E] rounded-md hover:bg-[#3A3A3E] transition-colors"
+                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 bg-[#2A2A2E] rounded-md hover:bg-[#3A3A3E] transition-colors"
               >
                 <Copy className="w-3.5 h-3.5 text-[#8B8B90]" />
                 <span className="text-[11px] font-medium text-[#ADADB0]">Copy</span>

@@ -141,7 +141,7 @@ export default function FilmDetailPage() {
 
       const availableValue =
         typeof availableResult === "object" && availableResult !== null
-          ? Number((availableResult as { value?: number | bigint }).value || 0)
+          ? Number((availableResult as { value?: number | bigint }).value ?? 0)
           : Number(availableResult);
       setTokensAvailable(availableValue);
 
@@ -177,7 +177,7 @@ export default function FilmDetailPage() {
   }, [filmId, isConnected, address]);
 
   useEffect(() => {
-    fetchFilmData();
+    void fetchFilmData();
   }, [fetchFilmData]);
 
   async function handleInvest() {
@@ -209,7 +209,7 @@ export default function FilmDetailPage() {
       setInvestAmount("");
 
       setTimeout(() => {
-        fetchFilmData();
+        void fetchFilmData();
       }, 10000);
     } catch (err) {
       console.error("Investment error:", err);

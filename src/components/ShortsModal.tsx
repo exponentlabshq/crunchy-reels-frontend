@@ -58,7 +58,7 @@ function ShortsModalContent({
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [showPauseIndicator, setShowPauseIndicator] = useState(false)
+  const [showControls, setShowControls] = useState(true)
   
   // Gesture state
   const [dragOffset, setDragOffset] = useState(0)
@@ -69,6 +69,7 @@ function ShortsModalContent({
   const videoRef = useRef<HTMLVideoElement>(null)
   const nextVideoRef = useRef<HTMLVideoElement>(null)
   const prevVideoRef = useRef<HTMLVideoElement>(null)
+  const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null)
   
   // Gesture tracking
   const dragStartY = useRef(0)
@@ -86,6 +87,40 @@ function ShortsModalContent({
   // Threshold settings
   const COMMIT_THRESHOLD = 0.25 // 25% of screen height
   const VELOCITY_THRESHOLD = 0.5 // pixels per ms
+
+  // Auto-hide controls after 3 seconds
+  const resetHideTimer = useCallback(() => {
+    if (hideControlsTimeout.current) {
+      clearTimeout(hideControlsTimeout.current)
+    }
+    setShowControls(true)
+    hideControlsTimeout.current = setTimeout(() => {
+      if (isPlaying) {
+        setShowControls(false)
+      }
+    }, 3000)
+  }, [isPlaying])
+
+  useEffect(() => {
+    resetHideTimer()
+    return () => {
+      if (hideControlsTimeout.current) {
+        clearTimeout(hideControlsTimeout.current)
+      }
+    }
+  }, [resetHideTimer])
+
+  // Show controls when paused
+  useEffect(() => {
+    if (!isPlaying) {
+      setShowControls(true)
+      if (hideControlsTimeout.current) {
+        clearTimeout(hideControlsTimeout.current)
+      }
+    } else {
+      resetHideTimer()
+    }
+  }, [isPlaying, resetHideTimer])
 
   // Jump directly to a specific index with animation
   const jumpToIndex = useCallback((targetIndex: number, direction: "up" | "down") => {
@@ -202,7 +237,8 @@ function ShortsModalContent({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     handleDragMove(e.clientY)
-  }, [handleDragMove])
+    resetHideTimer()
+  }, [handleDragMove, resetHideTimer])
 
   const handleMouseUp = useCallback(() => {
     handleDragEnd()
@@ -256,25 +292,30 @@ function ShortsModalContent({
     if (!videoRef.current) return
     if (isPlaying) {
       videoRef.current.pause()
-      setShowPauseIndicator(true)
     } else {
       videoRef.current.play()
-      setShowPauseIndicator(false)
     }
     setIsPlaying(!isPlaying)
-  }, [isPlaying])
+    resetHideTimer()
+  }, [isPlaying, resetHideTimer])
 
   // Only toggle play if user didn't drag (tap vs swipe)
   const handleVideoTap = useCallback(() => {
     if (hasDragged.current) return
-    togglePlay()
-  }, [togglePlay])
+    // On tap, show controls if hidden, or toggle play if visible
+    if (!showControls) {
+      resetHideTimer()
+    } else {
+      togglePlay()
+    }
+  }, [togglePlay, showControls, resetHideTimer])
 
   const toggleMute = useCallback(() => {
     if (!videoRef.current) return
     videoRef.current.muted = !isMuted
     setIsMuted(!isMuted)
-  }, [isMuted])
+    resetHideTimer()
+  }, [isMuted, resetHideTimer])
 
   // Video events
   useEffect(() => {
@@ -305,7 +346,6 @@ function ShortsModalContent({
     if (!video) return
     
     setProgress(0)
-    setShowPauseIndicator(false)
     setIsPlaying(false)
     
     // Auto-play after video is ready
@@ -389,18 +429,12 @@ function ShortsModalContent({
       onMouseLeave={handleMouseLeave}
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
-      {/* Close button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
-      >
-        <X className="w-5 h-5 text-white" />
-      </button>
-
-      {/* Videos Container */}
+      {/* Full Screen Video Container - Mobile fills entire screen */}
       <div className="w-full h-[100dvh] flex items-center justify-center">
-        <div className="flex items-center gap-4 h-full max-h-[100dvh] py-4">
-          {/* Left dots */}
+        {/* Desktop: Aspect ratio container with side controls */}
+        {/* Mobile: Full screen video */}
+        <div className="flex items-center gap-0 md:gap-4 h-full w-full md:w-auto md:max-h-[100dvh] md:py-4">
+          {/* Left dots - Desktop only */}
           <div className="hidden md:flex flex-col gap-2 px-2 z-20">
             {shortsForCurrentFilm.map((short) => (
               <button
@@ -415,8 +449,8 @@ function ShortsModalContent({
             ))}
           </div>
 
-          {/* Video Stack */}
-          <div className="relative h-full aspect-[9/16] max-w-full overflow-hidden rounded-2xl bg-black">
+          {/* Video Stack - Full screen on mobile, 9:16 on desktop */}
+          <div className="relative w-full h-full md:h-full md:aspect-[9/16] md:max-w-full overflow-hidden md:rounded-2xl bg-black">
             {/* Previous Video (above) */}
             {dragOffset > 0 && (
               <div
@@ -429,11 +463,11 @@ function ShortsModalContent({
                 <video
                   ref={prevVideoRef}
                   src={prevShort?.videoUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   muted
                   playsInline
                 />
-                <VideoOverlay short={prevShort} />
+                <VideoOverlay short={prevShort} showControls={showControls} />
               </div>
             )}
 
@@ -448,62 +482,84 @@ function ShortsModalContent({
               <video
                 ref={videoRef}
                 src={currentShort.videoUrl}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 muted={isMuted}
                 playsInline
                 onClick={handleVideoTap}
               />
 
-              {/* Paused Indicator - only shows when paused */}
-              {showPauseIndicator && !isPlaying && !isDragging && (
+              {/* Center Play Button - Only when paused and controls visible */}
+              {!isPlaying && showControls && !isDragging && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <button
                     onClick={togglePlay}
-                    className="w-20 h-20 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center pointer-events-auto cursor-pointer hover:bg-black/50 transition-colors"
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center pointer-events-auto cursor-pointer hover:bg-black/50 transition-colors"
                   >
-                    <Play className="w-10 h-10 text-white ml-1" />
+                    <Play className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" />
                   </button>
                 </div>
               )}
 
-              {/* Header */}
-              <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none">
+              {/* Header - Auto-hiding */}
+              <div 
+                className={`absolute top-0 left-0 right-0 pt-12 md:pt-4 px-4 pb-8 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none transition-opacity duration-300 ${
+                  showControls ? "opacity-100" : "opacity-0"
+                }`}
+              >
                 <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
                   Film #{currentShort.filmId}
                 </p>
-                <h2 className="text-white font-semibold text-lg">{currentShort.title}</h2>
+                <h2 className="text-white font-semibold text-base md:text-lg">{currentShort.title}</h2>
                 <p className="text-white/60 text-sm">{currentShort.duration}</p>
               </div>
 
-              {/* Bottom Controls */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <div className="h-1 bg-white/20 rounded-full mb-4 overflow-hidden">
-                  <div
-                    className="h-full bg-primary-500 rounded-full transition-all duration-100"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+              {/* Close button - Always visible on mobile, auto-hide on desktop */}
+              <button
+                onClick={onClose}
+                className={`absolute top-3 right-3 z-30 p-2 md:p-2.5 rounded-full bg-black/40 hover:bg-black/60 transition-all backdrop-blur-sm ${
+                  showControls ? "opacity-100" : "md:opacity-0"
+                }`}
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
 
+              {/* Progress bar - Always at very bottom */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20">
+                <div
+                  className="h-full bg-primary-500 transition-all duration-100"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+
+              {/* Bottom Controls - Auto-hiding, positioned above safe area */}
+              <div 
+                className={`absolute bottom-[env(safe-area-inset-bottom,0px)] left-0 right-0 pb-4 pt-16 px-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${
+                  showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+              >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  {/* Left: Play/Mute controls */}
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={togglePlay}
-                      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
+                      className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
                     >
-                      {isPlaying ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white ml-0.5" />}
+                      {isPlaying ? <Pause className="w-4 h-4 md:w-5 md:h-5 text-white" /> : <Play className="w-4 h-4 md:w-5 md:h-5 text-white ml-0.5" />}
                     </button>
                     <button
                       onClick={toggleMute}
-                      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
+                      className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
                     >
-                      {isMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+                      {isMuted ? <VolumeX className="w-4 h-4 md:w-5 md:h-5 text-white" /> : <Volume2 className="w-4 h-4 md:w-5 md:h-5 text-white" />}
                     </button>
                   </div>
 
+                  {/* Right: Invest button - Mobile only */}
                   <Link
                     href={`/films/${currentShort.filmId}`}
                     onClick={onClose}
-                    className="md:hidden px-4 py-2 bg-primary-500 hover:bg-primary-600 rounded-full text-white text-sm font-medium transition-colors flex items-center gap-2"
+                    className="md:hidden px-4 py-2 bg-primary-500 hover:bg-primary-600 rounded-full text-white text-sm font-medium transition-colors flex items-center gap-1.5"
                   >
                     <DollarSign className="w-4 h-4" />
                     <span>Invest</span>
@@ -511,19 +567,33 @@ function ShortsModalContent({
                 </div>
               </div>
 
-              {/* Mobile dots */}
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col gap-2 md:hidden">
+              {/* Mobile dots - Vertical on right side, auto-hiding */}
+              <div 
+                className={`absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2.5 md:hidden transition-opacity duration-300 ${
+                  showControls ? "opacity-100" : "opacity-0"
+                }`}
+              >
                 {shortsForCurrentFilm.map((short) => (
                   <button
                     key={short.globalIndex}
                     onClick={() => goToShort(short.globalIndex)}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
                       short.globalIndex === currentIndex
                         ? "bg-primary-500 scale-125"
-                        : "bg-white/30 hover:bg-white/50"
+                        : "bg-white/40 hover:bg-white/60"
                     }`}
                   />
                 ))}
+              </div>
+
+              {/* Swipe indicator - Mobile only, briefly visible */}
+              <div 
+                className={`absolute left-1/2 -translate-x-1/2 bottom-20 flex flex-col items-center gap-1 md:hidden transition-opacity duration-300 ${
+                  showControls && currentIndex === startingIndex ? "opacity-60" : "opacity-0"
+                }`}
+              >
+                <ChevronUp className="w-5 h-5 text-white animate-bounce" />
+                <span className="text-white/60 text-xs">Swipe for more</span>
               </div>
             </div>
 
@@ -539,16 +609,16 @@ function ShortsModalContent({
                 <video
                   ref={nextVideoRef}
                   src={nextShort?.videoUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   muted
                   playsInline
                 />
-                <VideoOverlay short={nextShort} />
+                <VideoOverlay short={nextShort} showControls={showControls} />
               </div>
             )}
           </div>
 
-          {/* Right Side Controls */}
+          {/* Right Side Controls - Desktop only */}
           <div className="hidden md:flex flex-col items-center gap-4 px-2 z-20">
             <button
               onClick={goPrevFilm}
@@ -589,14 +659,18 @@ function ShortsModalContent({
 }
 
 // Simple overlay for adjacent videos during drag
-function VideoOverlay({ short }: { short: AllShort | undefined }) {
+function VideoOverlay({ short, showControls }: { short: AllShort | undefined; showControls: boolean }) {
   if (!short) return null
   return (
-    <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none">
+    <div 
+      className={`absolute top-0 left-0 right-0 pt-12 md:pt-4 px-4 pb-8 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none transition-opacity duration-300 ${
+        showControls ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
         Film #{short.filmId}
       </p>
-      <h2 className="text-white font-semibold text-lg">{short.title}</h2>
+      <h2 className="text-white font-semibold text-base md:text-lg">{short.title}</h2>
       <p className="text-white/60 text-sm">{short.duration}</p>
     </div>
   )

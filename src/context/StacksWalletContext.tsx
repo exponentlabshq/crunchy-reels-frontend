@@ -8,15 +8,20 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import { AppConfig, UserSession, connect as stacksConnect, disconnect } from "@stacks/connect";
-import { APP_NAME, APP_ICON, IS_MAINNET } from "@/constants";
+import {
+  AppConfig,
+  UserSession,
+  connect as stacksConnect,
+  disconnect,
+} from "@stacks/connect";
+import { IS_MAINNET } from "@/constants";
 
 interface StacksWalletState {
   isConnected: boolean;
   isConnecting: boolean;
   address: string | null;
   stxAddress: string | null;
-  connect: () => void;
+  connect: () => Promise<void>;
   disconnectWallet: () => void;
 }
 
@@ -50,19 +55,13 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
 
     try {
       const response = await stacksConnect({
-        appDetails: {
-          name: APP_NAME,
-          icon: window.location.origin + APP_ICON,
-        },
-        userSession,
+        forceWalletSelect: true,
       });
 
       // v8 returns addresses directly in response
       console.log("Connect response:", response);
       if (response?.addresses) {
-        const stxAddr = response.addresses.find(
-          (a: { symbol: string; address: string }) => a.symbol === "STX"
-        );
+        const stxAddr = response.addresses.find((a) => a.symbol === "STX");
         if (stxAddr) {
           setAddress(stxAddr.address);
           setStxAddress(stxAddr.address);

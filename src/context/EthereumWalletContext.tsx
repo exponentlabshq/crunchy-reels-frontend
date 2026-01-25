@@ -16,6 +16,7 @@ import {
   type PublicClient,
   type WalletClient,
   type Address,
+  type EIP1193Provider,
 } from "viem"
 import { sepolia } from "viem/chains"
 
@@ -34,6 +35,12 @@ interface EthereumWalletState {
 
 const EthereumWalletContext = createContext<EthereumWalletState | null>(null)
 
+function getEthereumProvider(): EIP1193Provider | null {
+  if (typeof window === "undefined") return null
+  const provider = window.ethereum as EIP1193Provider | undefined
+  return provider ?? null
+}
+
 export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
@@ -44,7 +51,8 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   const initializeClients = useCallback((account: Address) => {
-    if (typeof window === "undefined" || !window.ethereum) return
+    const provider = getEthereumProvider()
+    if (!provider) return
 
     const pub = createPublicClient({
       chain: sepolia,
@@ -54,7 +62,7 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
     const wallet = createWalletClient({
       account,
       chain: sepolia,
-      transport: custom(window.ethereum),
+      transport: custom(provider),
     })
 
     setPublicClient(pub)
@@ -64,20 +72,21 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   // Check for existing connection on mount
   useEffect(() => {
     const checkConnection = async () => {
-      if (typeof window === "undefined" || !window.ethereum) return
+      const provider = getEthereumProvider()
+      if (!provider) return
 
       try {
-        const accounts = (await window.ethereum.request({
+        const accounts = (await provider.request({
           method: "eth_accounts",
         })) as Address[]
 
-        if (accounts.length > 0) {
+        if (accounts.length > 0 && accounts[0]) {
           const account = accounts[0]
           setAddress(account)
           setIsConnected(true)
           initializeClients(account)
 
-          const currentChainId = await window.ethereum.request({
+          const currentChainId = await provider.request({
             method: "eth_chainId",
           })
           setChainId(parseInt(currentChainId as string, 16))
@@ -87,12 +96,13 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    checkConnection()
+    void checkConnection()
   }, [initializeClients])
 
   // Listen for account and chain changes
   useEffect(() => {
-    if (typeof window === "undefined" || !window.ethereum) return
+    const provider = getEthereumProvider()
+    if (!provider) return
 
     const handleAccountsChanged = (accounts: unknown) => {
       const accts = accounts as Address[]
@@ -100,7 +110,7 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
         setAddress(null)
         setIsConnected(false)
         setWalletClient(null)
-      } else {
+      } else if (accts[0]) {
         const account = accts[0]
         setAddress(account)
         setIsConnected(true)
@@ -112,19 +122,20 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
       setChainId(parseInt(newChainId as string, 16))
     }
 
-    window.ethereum.on("accountsChanged", handleAccountsChanged)
-    window.ethereum.on("chainChanged", handleChainChanged)
+    provider.on("accountsChanged", handleAccountsChanged)
+    provider.on("chainChanged", handleChainChanged)
 
     return () => {
-      window.ethereum?.removeListener("accountsChanged", handleAccountsChanged)
-      window.ethereum?.removeListener("chainChanged", handleChainChanged)
+      provider.removeListener("accountsChanged", handleAccountsChanged)
+      provider.removeListener("chainChanged", handleChainChanged)
     }
   }, [initializeClients])
 
   const connect = useCallback(async () => {
     setError(null)
 
-    if (typeof window === "undefined" || !window.ethereum) {
+    const provider = getEthereumProvider()
+    if (!provider) {
       const errorMessage = "No Ethereum wallet found. Please install MetaMask or another wallet extension."
       setError(errorMessage)
       return
@@ -133,17 +144,17 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
     setIsConnecting(true)
 
     try {
-      const accounts = (await window.ethereum.request({
+      const accounts = (await provider.request({
         method: "eth_requestAccounts",
       })) as Address[]
 
-      if (accounts.length > 0) {
+      if (accounts.length > 0 && accounts[0]) {
         const account = accounts[0]
         setAddress(account)
         setIsConnected(true)
         initializeClients(account)
 
-        const currentChainId = await window.ethereum.request({
+        const currentChainId = await provider.request({
           method: "eth_chainId",
         })
         setChainId(parseInt(currentChainId as string, 16))
@@ -165,10 +176,11 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const switchToSepolia = useCallback(async () => {
-    if (typeof window === "undefined" || !window.ethereum) return
+    const provider = getEthereumProvider()
+    if (!provider) return
 
     try {
-      await window.ethereum.request({
+      await provider.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: "0xaa36a7" }], // Sepolia chain ID
       })
@@ -176,7 +188,7 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
       // If Sepolia is not added, add it
       const err = error as { code?: number }
       if (err.code === 4902) {
-        await window.ethereum.request({
+        await provider.request({
           method: "wallet_addEthereumChain",
           params: [
             {
@@ -224,15 +236,4 @@ export function useEthereumWallet() {
     throw new Error("useEthereumWallet must be used within an EthereumWalletProvider")
   }
   return context
-}
-
-// Type declaration for window.ethereum
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
-      on: (event: string, callback: (data: unknown) => void) => void
-      removeListener: (event: string, callback: (data: unknown) => void) => void
-    }
-  }
 }
