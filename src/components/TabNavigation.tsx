@@ -1,8 +1,10 @@
 "use client";
 
-import { ArrowLeftRight, Code, Film, User, Wallet } from "lucide-react";
+import { ArrowLeftRight, ChevronDown, Code, Film, User, Wallet, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useStacksWallet } from "@/context/StacksWalletContext";
+import { truncateAddress } from "@/utils/truncateAddress";
 
 interface TabItem {
   label: string;
@@ -17,25 +19,20 @@ const tabItems: TabItem[] = [
     icon: Film,
   },
   {
-    label: "Bridge",
-    path: "/bridge",
-    icon: ArrowLeftRight,
-  },
-  {
     label: "Wallet",
     path: "/wallet",
     icon: Wallet,
   },
   {
-    label: "Profile",
-    path: "/profile",
-    icon: User,
+    label: "Bridge",
+    path: "/bridge",
+    icon: ArrowLeftRight,
   },
   {
     label: "Contract Tester",
     path: "/contract-tester",
     icon: Code,
-  }
+  },
 ];
 
 interface TabNavigationProps {
@@ -44,62 +41,91 @@ interface TabNavigationProps {
 
 export function TabNavigation({ variant }: TabNavigationProps) {
   const pathname = usePathname();
+  const { isConnected, address } = useStacksWallet();
 
-  // Sidebar variant - Desktop only
   if (variant === "sidebar") {
     return (
-      <div className="hidden lg:flex flex-col w-64 bg-background-100/50 backdrop-blur-xl border-r border-background-300/50 z-50">
-        {/* Logo/Brand */}
-        <div className="p-6 border-b border-background-300/50">
-          <h1 className="text-primary-500 text-xl font-bold font-sans tracking-tight">
-            CineBlock
-          </h1>
-          <p className="text-typography-500 text-xs mt-1">Film Investment on Bitcoin</p>
-        </div>
+      <div className="hidden lg:flex flex-col w-[260px] bg-[#111113] border-l-[3px] border-l-primary-500 h-screen shrink-0 z-50">
+        <div className="flex flex-col justify-between h-full py-6 px-5 overflow-y-auto">
+          {/* Sidebar Top */}
+          <div className="flex flex-col gap-8">
+            {/* Logo */}
+            <div className="flex items-center gap-2.5 pb-4">
+              <span className="text-white text-lg font-semibold font-mono tracking-[4px]">
+                CINEBLOCK
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+            </div>
 
-        {/* Navigation Items */}
-        <nav className="flex-1 p-4 flex flex-col gap-1">
-          {tabItems.map((route, index) => {
-            const Icon = route.icon;
-            const isActive = pathname === route.path;
-            return (
+            {/* Navigation Items */}
+            <nav className="flex flex-col gap-1">
+              {tabItems.map((route) => {
+                const Icon = route.icon;
+                const isActive = pathname === route.path || pathname.startsWith(route.path + "/");
+                return (
+                  <Link
+                    key={route.path}
+                    href={route.path}
+                    className={`flex items-center gap-3 px-3.5 py-3 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-[#1A1A1D] text-white"
+                        : "text-[#8B8B90] hover:bg-[#1A1A1D]/50 hover:text-white"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-[18px] h-[18px] ${
+                        isActive ? "text-primary-500" : "text-[#6B6B70]"
+                      }`}
+                      strokeWidth={1.5}
+                    />
+                    <span className={`text-sm ${isActive ? "font-medium" : "font-normal"}`}>
+                      {route.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Sidebar Bottom */}
+          <div className="flex flex-col gap-4">
+    
+
+            {/* Divider */}
+            <div className="h-px bg-[#2A2A2E]" />
+
+            {/* Account Section */}
+            {isConnected && address ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[#2A2A2E] flex items-center justify-center">
+                    <span className="text-xs font-semibold text-[#8B8B90]">
+                      {address.slice(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[13px] font-medium text-white">
+                      {truncateAddress(address).split("...")[0]}
+                    </span>
+                    <span className="text-[11px] font-mono text-[#6B6B70]">
+                      {truncateAddress(address)}
+                    </span>
+                  </div>
+                </div>
+                <ChevronDown className="w-4 h-4 text-[#6B6B70]" />
+              </div>
+            ) : (
               <Link
-                key={index}
-                href={route.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${
-                  isActive
-                    ? "bg-primary-500/20 text-primary-500"
-                    : "text-typography-500 hover:bg-background-200 hover:text-typography-900"
-                }`}
+                href="/connect-wallet"
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-500 rounded-r-full" />
-                )}
-                <Icon
-                  className={`w-5 h-5 transition-all duration-300 ${
-                    isActive
-                      ? "text-primary-500"
-                      : "text-typography-500 group-hover:text-typography-900"
-                  }`}
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span
-                  className={`text-sm font-medium transition-all duration-300 ${
-                    isActive
-                      ? "text-primary-500 font-semibold"
-                      : "text-typography-600 group-hover:text-typography-900"
-                  }`}
-                >
-                  {route.label}
-                </span>
+                <div className="w-9 h-9 rounded-full bg-[#2A2A2E] flex items-center justify-center">
+                  <Wallet className="w-4 h-4 text-[#6B6B70]" />
+                </div>
+                <span className="text-[13px] text-[#8B8B90]">Connect Wallet</span>
               </Link>
-            );
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-background-300/50">
-          <p className="text-typography-500 text-xs text-center">Powered by Stacks & Bitcoin</p>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -107,33 +133,33 @@ export function TabNavigation({ variant }: TabNavigationProps) {
 
   // Bottom bar variant - Mobile only
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background-0/60 backdrop-blur-xl border-t border-background-300/50 z-50 shadow-[0_-2px_20px_rgba(0,0,0,0.1)]">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background-50/95 backdrop-blur-xl border-t border-background-300 z-50">
       <div className="flex pb-4">
-        {tabItems.map((route, index) => {
+        {tabItems.slice(0, 4).map((route) => {
           const Icon = route.icon;
-          const isActive = pathname === route.path;
+          const isActive = pathname === route.path || pathname.startsWith(route.path + "/");
           return (
             <Link
-              key={index}
+              key={route.path}
               href={route.path}
-              className="flex-1 flex flex-col items-center justify-center py-4 gap-1.5 transition-all duration-300 relative group"
+              className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all duration-200 relative"
             >
               {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary-500 rounded-full" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-primary-500 rounded-full" />
               )}
               <Icon
-                className={`w-6 h-6 transition-all duration-300 ${
+                className={`w-5 h-5 transition-all ${
                   isActive
-                    ? "text-primary-500 scale-110"
-                    : "text-typography-500 opacity-55 group-hover:opacity-90"
+                    ? "text-primary-500"
+                    : "text-typography-500"
                 }`}
-                strokeWidth={isActive ? 2.5 : 2}
+                strokeWidth={isActive ? 2 : 1.5}
               />
               <span
-                className={`text-xs leading-4 tracking-wider transition-all duration-300 ${
+                className={`text-[11px] transition-all ${
                   isActive
-                    ? "text-primary-500 font-semibold"
-                    : "text-typography-600 opacity-55 group-hover:opacity-90"
+                    ? "text-primary-500 font-medium"
+                    : "text-typography-500"
                 }`}
               >
                 {route.label}

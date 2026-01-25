@@ -2,14 +2,15 @@ import { TabNavigation } from "@/components/TabNavigation";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background-0 flex flex-col">
-      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
-        <TabNavigation variant="sidebar" />
+    <div className="h-screen overflow-hidden bg-background-0 flex">
+      {/* Sidebar - fixed height, independent scroll */}
+      <TabNavigation variant="sidebar" />
 
-        <main className="flex-1 overflow-hidden">{children}</main>
+      {/* Main content - independent scroll container */}
+      <main className="flex-1 h-full overflow-y-auto">{children}</main>
 
-        <TabNavigation variant="bottom" />
-      </div>
+      {/* Mobile bottom nav */}
+      <TabNavigation variant="bottom" />
     </div>
   );
 }

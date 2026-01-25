@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import {
-  ArrowRight,
-  Wallet,
   CheckCircle2,
   Loader2,
   AlertCircle,
-  ArrowDownUp,
+  ArrowDown,
+  ArrowRightLeft,
   ExternalLink,
+  ChevronDown,
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { parseUnits, formatUnits } from "viem"
@@ -28,6 +28,7 @@ import {
   DEFAULT_MAX_FEE,
   SEPOLIA_CHAIN_ID,
 } from "@/utils/bridgeConfig"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 type BridgeStep = "idle" | "approving" | "approved" | "depositing" | "completed" | "error"
 
@@ -65,12 +66,10 @@ function BridgeContent() {
   const parsedAmount = amount ? parseUnits(amount, USDC_DECIMALS) : BigInt(0)
   const hasEnoughAllowance = allowance !== null && allowance >= parsedAmount
 
-  // Determine the actual recipient address
   const recipientAddress = sendToOther ? customRecipient.trim() : stacksAddress
   const isValidRecipient = recipientAddress ? isValidStacksAddress(recipientAddress) : false
   const showRecipientError = sendToOther && customRecipient.trim() && !isValidRecipient
 
-  // Fetch USDC balance and allowance
   useEffect(() => {
     async function fetchBalanceAndAllowance() {
       if (!publicClient || !ethAddress) return
@@ -164,12 +163,12 @@ function BridgeContent() {
         abi: XRESERVE_ABI,
         functionName: "depositToRemote",
         args: [
-          parsedAmount, // value
-          STACKS_DOMAIN_ID, // remoteDomain
-          recipientBytes32, // remoteRecipient
-          SEPOLIA_USDC, // localToken
-          DEFAULT_MAX_FEE, // maxFee (0 = no limit)
-          "0x" as `0x${string}`, // hookData
+          parsedAmount,
+          STACKS_DOMAIN_ID,
+          recipientBytes32,
+          SEPOLIA_USDC,
+          DEFAULT_MAX_FEE,
+          "0x" as `0x${string}`,
         ],
         chain: sepolia,
         account: ethAddress,
@@ -200,128 +199,86 @@ function BridgeContent() {
   // Not connected to either wallet
   if (!isEthConnected || !isStacksConnected) {
     return (
-      <div className="flex-1 bg-background-0 overflow-y-auto pb-24 lg:pb-8">
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-typography-950 font-sans mb-2">Bridge</h1>
-            <p className="text-typography-600">Bridge USDC from Ethereum to USDCx on Stacks</p>
-          </div>
+      <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-semibold text-white mb-2">Bridge</h1>
+              <p className="text-sm text-[#6B6B70]">
+                Connect wallets to bridge USDC → USDCx
+              </p>
+            </div>
 
-          <div className="bg-background-100 border border-background-300 rounded-2xl p-8">
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto">
-                <ArrowDownUp className="w-10 h-10 text-primary-500" />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-semibold text-typography-950 mb-2">
-                  Connect Both Wallets
-                </h2>
-                <p className="text-typography-500 max-w-md mx-auto">
-                  To bridge USDC from Ethereum Sepolia to USDCx on Stacks testnet, you need to
-                  connect both your Ethereum and Stacks wallets.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {/* Ethereum Wallet Status */}
-                <div
-                  className={`flex-1 p-4 rounded-xl border-2 transition-all ${
-                    isEthConnected
-                      ? "border-success-500 bg-success-500/10"
-                      : "border-background-300 bg-background-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isEthConnected ? "bg-success-500/20" : "bg-blue-500/20"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 320 512" fill="currentColor">
-                        <path
-                          d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"
-                          className={isEthConnected ? "fill-success-500" : "fill-blue-500"}
-                        />
-                      </svg>
+            <div className="bg-[#111113] border border-[#1F1F23] rounded-2xl p-6 space-y-4">
+              {/* Ethereum */}
+              <div
+                className={`p-4 rounded-xl border transition-all ${
+                  isEthConnected
+                    ? "border-success-500/50 bg-success-500/5"
+                    : "border-[#1F1F23] hover:border-[#2A2A2E]"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#627EEA] flex items-center justify-center">
+                      <span className="text-white font-bold">E</span>
                     </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-typography-950">Ethereum</p>
-                      <p className="text-xs text-typography-500">Sepolia Testnet</p>
+                    <div>
+                      <p className="text-sm font-medium text-white">Ethereum</p>
+                      <p className="text-xs text-[#6B6B70]">Sepolia</p>
                     </div>
-                    {isEthConnected && (
-                      <CheckCircle2 className="w-5 h-5 text-success-500 ml-auto" />
-                    )}
                   </div>
-                  {!isEthConnected && (
+                  {isEthConnected ? (
+                    <div className="flex items-center gap-1.5 text-success-500">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span className="text-xs font-medium">Connected</span>
+                    </div>
+                  ) : (
                     <button
                       onClick={connectEth}
                       disabled={isEthConnecting}
-                      className="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="px-4 py-2 bg-[#627EEA] hover:bg-[#5268c4] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                     >
                       {isEthConnecting ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Wallet className="w-4 h-4" />
+                        "Connect"
                       )}
-                      Connect MetaMask
                     </button>
                   )}
-                  {isEthConnected && ethAddress && (
-                    <p className="text-xs text-typography-500 font-mono truncate">
-                      {ethAddress}
-                    </p>
-                  )}
                 </div>
+              </div>
 
-                {/* Stacks Wallet Status */}
-                <div
-                  className={`flex-1 p-4 rounded-xl border-2 transition-all ${
-                    isStacksConnected
-                      ? "border-success-500 bg-success-500/10"
-                      : "border-background-300 bg-background-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isStacksConnected ? "bg-success-500/20" : "bg-primary-500/20"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                          className={isStacksConnected ? "stroke-success-500" : "stroke-primary-500"}
-                        />
-                      </svg>
+              {/* Stacks */}
+              <div
+                className={`p-4 rounded-xl border transition-all ${
+                  isStacksConnected
+                    ? "border-success-500/50 bg-success-500/5"
+                    : "border-[#1F1F23] hover:border-[#2A2A2E]"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#5546FF] flex items-center justify-center">
+                      <span className="text-white font-bold">S</span>
                     </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-typography-950">Stacks</p>
-                      <p className="text-xs text-typography-500">Testnet</p>
+                    <div>
+                      <p className="text-sm font-medium text-white">Stacks</p>
+                      <p className="text-xs text-[#6B6B70]">Testnet</p>
                     </div>
-                    {isStacksConnected && (
-                      <CheckCircle2 className="w-5 h-5 text-success-500 ml-auto" />
-                    )}
                   </div>
-                  {!isStacksConnected && (
+                  {isStacksConnected ? (
+                    <div className="flex items-center gap-1.5 text-success-500">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span className="text-xs font-medium">Connected</span>
+                    </div>
+                  ) : (
                     <a
                       href="/connect-wallet"
-                      className="w-full py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="px-4 py-2 bg-[#5546FF] hover:bg-[#4438cc] text-white text-sm font-medium rounded-lg transition-colors"
                     >
-                      <Wallet className="w-4 h-4" />
-                      Connect Stacks
+                      Connect
                     </a>
-                  )}
-                  {isStacksConnected && stacksAddress && (
-                    <p className="text-xs text-typography-500 font-mono truncate">
-                      {stacksAddress}
-                    </p>
                   )}
                 </div>
               </div>
@@ -335,29 +292,20 @@ function BridgeContent() {
   // Wrong network
   if (isWrongNetwork) {
     return (
-      <div className="flex-1 bg-background-0 overflow-y-auto pb-24 lg:pb-8">
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-typography-950 font-sans mb-2">Bridge</h1>
-            <p className="text-typography-600">Bridge USDC from Ethereum to USDCx on Stacks</p>
-          </div>
-
-          <div className="bg-background-100 border border-warning-500/50 rounded-2xl p-8">
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-warning-500/20 rounded-full flex items-center justify-center mx-auto">
-                <AlertCircle className="w-10 h-10 text-warning-500" />
+      <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+          <div className="w-full max-w-md">
+            <div className="bg-[#111113] border border-warning-500/30 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-warning-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-warning-500" />
               </div>
-
-              <div>
-                <h2 className="text-xl font-semibold text-typography-950 mb-2">Wrong Network</h2>
-                <p className="text-typography-500">
-                  Please switch to Sepolia testnet to bridge USDC.
-                </p>
-              </div>
-
+              <h2 className="text-lg font-semibold text-white mb-2">Wrong Network</h2>
+              <p className="text-sm text-[#8B8B90] mb-6">
+                Switch to Sepolia to continue
+              </p>
               <button
                 onClick={switchToSepolia}
-                className="px-6 py-3 bg-warning-500 hover:bg-warning-600 text-white font-medium rounded-xl transition-colors"
+                className="w-full py-3 bg-warning-500 hover:bg-warning-600 text-white font-medium rounded-xl transition-colors"
               >
                 Switch to Sepolia
               </button>
@@ -368,333 +316,261 @@ function BridgeContent() {
     )
   }
 
-  // Main bridge UI
-  return (
-    <div className="flex-1 bg-background-0 overflow-y-auto pb-24 lg:pb-8">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-typography-950 font-sans mb-2">Bridge</h1>
-          <p className="text-typography-600">Bridge USDC from Ethereum Sepolia to USDCx on Stacks</p>
-        </div>
-
-        {/* Connected Wallets Summary */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-background-100 border border-background-300 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-success-500 rounded-full animate-pulse" />
-              <span className="text-sm text-typography-500">Ethereum</span>
-            </div>
-            <p className="text-xs text-typography-950 font-mono truncate">{ethAddress}</p>
-            {usdcBalance !== null && (
-              <p className="text-sm text-primary-500 mt-1">
-                {formatUnits(usdcBalance, USDC_DECIMALS)} USDC
+  // Completed state
+  if (step === "completed") {
+    return (
+      <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+          <div className="w-full max-w-md">
+            <div className="bg-[#111113] border border-[#1F1F23] rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-success-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-8 h-8 text-success-500" />
+              </div>
+              <h2 className="text-lg font-semibold text-white mb-2">Bridge Initiated</h2>
+              <p className="text-sm text-[#8B8B90] mb-6">
+                Please allow time for the minting process.<br/>USDCx will arrive in 5-30 minutes
               </p>
-            )}
-          </div>
-          <div className="bg-background-100 border border-background-300 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-success-500 rounded-full animate-pulse" />
-              <span className="text-sm text-typography-500">Stacks</span>
-            </div>
-            <p className="text-xs text-typography-950 font-mono truncate">{stacksAddress}</p>
-          </div>
-        </div>
-
-        {/* Bridge Card */}
-        <div className="bg-background-100 border border-background-300 rounded-2xl p-6">
-          {step === "completed" ? (
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-success-500/20 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-10 h-10 text-success-500" />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-semibold text-typography-950 mb-2">
-                  Bridge Initiated!
-                </h2>
-                <p className="text-typography-500 max-w-md mx-auto">
-                  Your USDC is being bridged to Stacks. USDCx will be minted to{" "}
-                  {sendToOther ? "the recipient address" : "your Stacks wallet"} once the attestation
-                  is processed. This may take a few minutes.
-                </p>
-                {sendToOther && recipientAddress && (
-                  <div className="mt-4 bg-background-0 rounded-xl p-3 max-w-md mx-auto">
-                    <p className="text-xs text-typography-500 mb-1">Recipient</p>
-                    <p className="text-typography-950 font-mono text-sm break-all">{recipientAddress}</p>
-                  </div>
-                )}
-              </div>
-
               {txHash && (
                 <a
                   href={`https://sepolia.etherscan.io/tx/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-400 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400 mb-6"
                 >
                   View on Etherscan
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
-
               <button
                 onClick={handleReset}
-                className="px-6 py-3 bg-background-200 hover:bg-background-300 text-typography-950 font-medium rounded-xl transition-colors"
+                className="w-full py-3 bg-[#1A1A1D] hover:bg-[#2A2A2E] text-white font-medium rounded-xl transition-colors"
               >
                 Bridge More
               </button>
             </div>
-          ) : (
-            <>
-              {/* From Section */}
-              <div className="mb-4">
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-              {/* Info Note */}
-              <div className="mb-4 p-4 bg-primary-500/10 border border-primary-500/20 rounded-xl">
-                <p className="text-sm text-typography-200">
-                  <span className="text-primary-500 font-medium">Important Note:</span> After initiating the
-                  bridge, the xReserve attestation service will mint USDCx to the recipient&apos;s Stacks wallet.
-                  This typically takes 5-15 minutes. You can send to your own wallet or another address.
-                </p>
+  // Main bridge UI - Aerodrome style
+  return (
+    <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8 pt-12">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-semibold text-white mb-1">Bridge</h1>
+            <p className="text-sm text-[#6B6B70]">Bridge USDC from Ethereum Sepolia to USDCx on Stacks</p>
+          </div>
+
+        <Alert>
+          <AlertCircle className="w-4 h-4" />
+          <AlertTitle>Please Be Patient:</AlertTitle>
+          <AlertDescription>
+          After initiating the bridge, the Reserve attestation service will mint USDx to the recipient's Stacks wallet. <br/><span className="text-orange-400">This could take 5-30 minutes.</span>
+          </AlertDescription>
+        </Alert>
+
+          {/* Bridge Card */}
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-2xl overflow-hidden mt-4">
+            {/* From Section */}
+            <div className="p-4 border-b border-[#1F1F23]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-white">From</span>
+                <span className="text-xs text-[#6B6B70]">
+                  Balance{" "}
+                  <span className="text-[#8B8B90]">
+                    {usdcBalance !== null ? formatUnits(usdcBalance, USDC_DECIMALS) : "0"} USDC
+                  </span>
+                  {usdcBalance !== null && usdcBalance > BigInt(0) && (
+                    <button
+                      onClick={() => setAmount(formatUnits(usdcBalance, USDC_DECIMALS))}
+                      className="ml-2 text-primary-500 hover:text-primary-400"
+                    >
+                      MAX
+                    </button>
+                  )}
+                </span>
               </div>
-                <label className="block text-sm font-medium text-typography-500 mb-2">From</label>
-                <div className="bg-background-0 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-blue-400 font-bold text-xs">$</span>
-                      </div>
-                      <div>
-                        <p className="text-typography-950 font-medium">USDC</p>
-                        <p className="text-xs text-typography-500">Ethereum Sepolia</p>
-                      </div>
+
+              <div className="flex items-center justify-between bg-[#0A0A0B] rounded-xl p-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-[#1A1A1D] rounded-lg border border-[#2A2A2E]">
+                    <div className="w-5 h-5 rounded-full bg-[#2775CA] flex items-center justify-center">
+                      <span className="text-white text-[10px] font-bold">$</span>
                     </div>
-                    {usdcBalance !== null && (
-                      <button
-                        onClick={() => setAmount(formatUnits(usdcBalance, USDC_DECIMALS))}
-                        className="text-xs text-primary-500 hover:text-primary-400"
-                      >
-                        Max: {formatUnits(usdcBalance, USDC_DECIMALS)}
-                      </button>
-                    )}
+                    <span className="text-sm font-medium text-white">USDC</span>
+               
                   </div>
+                </div>
+                <div className="flex flex-col items-end">
                   <input
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="0.00"
+                    placeholder="0"
                     disabled={step !== "idle" && step !== "approved" && step !== "error"}
-                    className="w-full bg-transparent text-2xl font-bold text-typography-950 placeholder:text-typography-400 outline-none disabled:opacity-50"
+                    className="bg-transparent text-2xl font-medium text-white placeholder:text-[#3A3A3E] outline-none text-right w-32 disabled:opacity-50"
                   />
+                  <span className="text-xs text-[#6B6B70]">Sepolia</span>
                 </div>
               </div>
+            </div>
 
-              {/* Arrow */}
-              <div className="flex justify-center -my-2 relative z-10">
-                <div className="w-10 h-10 bg-background-200 border-4 border-background-100 rounded-full flex items-center justify-center">
-                  <ArrowRight className="w-4 h-4 text-typography-500 rotate-90" />
+            {/* Arrow Divider */}
+            <div className="relative h-0">
+              <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className="w-9 h-9 bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg flex items-center justify-center">
+                  <ArrowDown className="w-4 h-4 text-[#8B8B90]" />
                 </div>
               </div>
+            </div>
 
-              {/* To Section */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-typography-500 mb-2">To</label>
-                <div className="bg-background-0 rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center">
-                      <span className="text-primary-500 font-bold text-xs">$</span>
+            {/* To Section */}
+            <div className="p-4 border-b border-[#1F1F23]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-white">To</span>
+                <span className="text-xs text-[#6B6B70]">Stacks Testnet</span>
+              </div>
+
+              <div className="flex items-center justify-between bg-[#0A0A0B] rounded-xl p-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-[#1A1A1D] rounded-lg border border-[#2A2A2E]">
+                    <div className="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center">
+                      <span className="text-white text-[10px] font-bold">$</span>
                     </div>
-                    <div>
-                      <p className="text-typography-950 font-medium">USDCx</p>
-                      <p className="text-xs text-typography-500">Stacks Testnet</p>
-                    </div>
+                    <span className="text-sm font-medium text-white">USDCx</span>
+           
                   </div>
-                  <p className="text-2xl font-bold text-typography-950">
-                    {amount || "0.00"}
-                  </p>
                 </div>
-              </div>
-
-              {/* Recipient Address Section */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-medium text-typography-500">Recipient Address</label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSendToOther(!sendToOther)
-                      if (sendToOther) setCustomRecipient("")
-                    }}
-                    disabled={step !== "idle" && step !== "approved" && step !== "error"}
-                    className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400 transition-colors disabled:opacity-50"
-                  >
-                    <div
-                      className={`w-10 h-5 rounded-full transition-colors relative ${
-                        sendToOther ? "bg-primary-500" : "bg-background-300"
-                      }`}
-                    >
-                      <div
-                        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
-                          sendToOther ? "translate-x-5" : "translate-x-0.5"
-                        }`}
-                      />
-                    </div>
-                    <span>Send to another address</span>
-                  </button>
-                </div>
-
-                {sendToOther ? (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={customRecipient}
-                      onChange={(e) => setCustomRecipient(e.target.value)}
-                      placeholder="Enter Stacks address (ST... or SP...)"
-                      disabled={step !== "idle" && step !== "approved" && step !== "error"}
-                      className={`w-full bg-background-0 border rounded-xl px-4 py-3 text-typography-950 placeholder:text-typography-400 outline-none transition-colors disabled:opacity-50 font-mono text-sm ${
-                        showRecipientError
-                          ? "border-error-500 focus:border-error-500"
-                          : "border-background-300 focus:border-primary-500"
-                      }`}
-                    />
-                    {showRecipientError && (
-                      <p className="text-xs text-error-500 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        Invalid Stacks address format
-                      </p>
-                    )}
-                    {customRecipient.trim() && isValidRecipient && (
-                      <p className="text-xs text-success-500 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Valid address
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="bg-background-0 border border-background-300 rounded-xl px-4 py-3">
-                    <p className="text-xs text-typography-500 mb-1">Your connected wallet</p>
-                    <p className="text-typography-950 font-mono text-sm truncate">{stacksAddress}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Fee Info */}
-              <div className="bg-background-0 rounded-xl p-4 mb-6">
-                <div className="flex justify-between text-sm">
-                  <span className="text-typography-500">Bridge Fee</span>
-                  <span className="text-typography-950">
-                    ~0.25% (protocol fee)
+                <div className="flex flex-col items-end">
+                  <span className="text-2xl font-medium text-[#4A4A4E]">
+                    {amount || "0"}
                   </span>
-                </div>
-                <div className="flex justify-between text-sm mt-2">
-                  <span className="text-typography-500">Estimated Time</span>
-                  <span className="text-typography-950">10-30 minutes</span>
+                  <span className="text-xs text-[#6B6B70]">~$0.0</span>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                {!hasEnoughAllowance && step !== "approved" ? (
-                  <button
-                    onClick={handleApprove}
-                    disabled={
-                      !amount ||
-                      parsedAmount <= BigInt(0) ||
-                      step === "approving" ||
-                      (usdcBalance !== null && parsedAmount > usdcBalance) ||
-                      !isValidRecipient
-                    }
-                    className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:bg-background-300 disabled:text-typography-500 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
-                  >
-                    {step === "approving" ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Approving USDC...
-                      </>
-                    ) : (
-                      <>
-                        Step 1: Approve USDC
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleDeposit}
-                    disabled={
-                      !amount ||
-                      parsedAmount <= BigInt(0) ||
-                      step === "depositing" ||
-                      (usdcBalance !== null && parsedAmount > usdcBalance) ||
-                      !isValidRecipient
-                    }
-                    className="w-full py-4 bg-primary-500 hover:bg-primary-600 disabled:bg-background-300 disabled:text-typography-500 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
-                  >
-                    {step === "depositing" ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Bridging...
-                      </>
-                    ) : (
-                      <>
-                        {hasEnoughAllowance ? "Bridge to Stacks" : "Step 2: Bridge to Stacks"}
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                )}
-
-                {step === "error" && (
-                  <button
-                    onClick={handleReset}
-                    className="w-full py-3 bg-background-200 hover:bg-background-300 text-typography-950 font-medium rounded-xl transition-colors"
-                  >
-                    Try Again
-                  </button>
-                )}
-              </div>
-
-            </>
-          )}
-        </div>
-
-        {/* How it Works */}
-        <div className="mt-8 bg-background-100 border border-background-300 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-typography-950 mb-4">How Bridging Works</h3>
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center shrink-0">
-                <span className="text-primary-500 font-bold text-sm">1</span>
-              </div>
-              <div>
-                <p className="text-typography-950 font-medium">Approve USDC</p>
-                <p className="text-sm text-typography-500">
-                  Allow the xReserve contract to spend your USDC on Sepolia.
-                </p>
-              </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center shrink-0">
-                <span className="text-primary-500 font-bold text-sm">2</span>
+
+            {/* Recipient Section */}
+            <div className="p-4 border-b border-[#1F1F23]">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-[#6B6B70]">Recipient</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSendToOther(!sendToOther)
+                    if (sendToOther) setCustomRecipient("")
+                  }}
+                  disabled={step !== "idle" && step !== "approved" && step !== "error"}
+                  className="text-xs text-primary-500 hover:text-primary-400 disabled:opacity-50"
+                >
+                  {sendToOther ? "Use my wallet" : "Send to other"}
+                </button>
               </div>
-              <div>
-                <p className="text-typography-950 font-medium">Deposit to xReserve</p>
-                <p className="text-sm text-typography-500">
-                  Initiate the cross-chain transfer targeting your Stacks address or send to another address.
+
+              {sendToOther ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={customRecipient}
+                    onChange={(e) => setCustomRecipient(e.target.value)}
+                    placeholder="ST... or SP..."
+                    disabled={step !== "idle" && step !== "approved" && step !== "error"}
+                    className={`w-full bg-[#0A0A0B] border rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-[#3A3A3E] outline-none transition-colors disabled:opacity-50 font-mono ${
+                      showRecipientError
+                        ? "border-error-500"
+                        : "border-[#2A2A2E] focus:border-primary-500/50"
+                    }`}
+                  />
+                  {showRecipientError && (
+                    <p className="text-xs text-error-500">Invalid address</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-[#8B8B90] font-mono truncate">
+                  {stacksAddress}
                 </p>
-              </div>
+              )}
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center shrink-0">
-                <span className="text-primary-500 font-bold text-sm">3</span>
-              </div>
-              <div>
-                <p className="text-typography-950 font-medium">Receive USDCx</p>
-                <p className="text-sm text-typography-500">
-                  Once attested, USDCx tokens are minted to the recipient&apos;s Stacks wallet.
-                </p>
-              </div>
+
+            {/* Info Row */}
+            <div className="px-4 py-3 flex items-center justify-between text-xs">
+              <span className="text-[#6B6B70]">Fee</span>
+              <span className="text-[#8B8B90]">~0.25%</span>
+            </div>
+
+            {/* Action Button */}
+            <div className="p-4 pt-0">
+              {!hasEnoughAllowance && step !== "approved" ? (
+                <button
+                  onClick={handleApprove}
+                  disabled={
+                    !amount ||
+                    parsedAmount <= BigInt(0) ||
+                    step === "approving" ||
+                    (usdcBalance !== null && parsedAmount > usdcBalance) ||
+                    !isValidRecipient
+                  }
+                  className="w-full py-3.5 bg-primary-500 hover:bg-primary-600 disabled:bg-[#1A1A1D] disabled:text-[#4A4A4E] text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  {step === "approving" ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Approving...
+                    </>
+                  ) : (
+                    "Approve USDC"
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={handleDeposit}
+                  disabled={
+                    !amount ||
+                    parsedAmount <= BigInt(0) ||
+                    step === "depositing" ||
+                    (usdcBalance !== null && parsedAmount > usdcBalance) ||
+                    !isValidRecipient
+                  }
+                  className="w-full py-3.5 bg-primary-500 hover:bg-primary-600 disabled:bg-[#1A1A1D] disabled:text-[#4A4A4E] text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  {step === "depositing" ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Bridging...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRightLeft className="w-4 h-4" />
+                      Bridge
+                    </>
+                  )}
+                </button>
+              )}
+
+              {step === "error" && (
+                <button
+                  onClick={handleReset}
+                  className="w-full mt-2 py-2.5 text-sm text-[#8B8B90] hover:text-white transition-colors"
+                >
+                  Try again
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Wallet Status Pills */}
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111113] rounded-full border border-[#1F1F23]">
+              <div className="w-2 h-2 rounded-full bg-success-500" />
+              <span className="text-xs text-[#8B8B90]">ETH</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111113] rounded-full border border-[#1F1F23]">
+              <div className="w-2 h-2 rounded-full bg-success-500" />
+              <span className="text-xs text-[#8B8B90]">STX</span>
             </div>
           </div>
         </div>

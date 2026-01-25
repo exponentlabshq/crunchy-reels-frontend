@@ -303,7 +303,7 @@ export default function FilmDetailPage() {
   }
 
   return (
-    <div className="flex-1 overflow-auto pb-24 lg:pb-8">
+    <div className="flex-1 overflow-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
       {/* Hero Section */}
       <div className="relative h-[45vh] min-h-[400px] max-h-[500px] w-full">
         <Image src={imageUri} alt={film.title} fill className="object-cover" priority />
@@ -460,9 +460,9 @@ export default function FilmDetailPage() {
               </div>
             </section>
 
-            {/* User Position & Earnings */}
+            {/* User Position */}
             {isConnected && userBalance > 0 && (
-              <section className="space-y-4">
+              <section>
                 {/* Holdings Card */}
                 <div className="relative overflow-hidden bg-gradient-to-br from-primary-500/10 via-primary-600/5 to-background-100 border border-primary-500/20 rounded-2xl p-6">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -492,174 +492,6 @@ export default function FilmDetailPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Earnings Card */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-success-500/10 via-success-600/5 to-background-100 border border-success-500/20 rounded-2xl p-6">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-success-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-typography-950 mb-4 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-success-500" />
-                      Your Earnings
-                    </h3>
-                    
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                      <div>
-                        <p className="text-typography-400 text-xs mb-1">Claimable Now</p>
-                        <p className="text-2xl font-bold text-success-500 font-mono">
-                          ${formatUSDCx(claimableRevenue)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-typography-400 text-xs mb-1">Already Claimed</p>
-                        <p className="text-2xl font-bold text-typography-950 font-mono">
-                          ${formatUSDCx(totalClaimed)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-typography-400 text-xs mb-1">Total Earnings</p>
-                        <p className="text-2xl font-bold text-typography-950 font-mono">
-                          ${formatUSDCx(claimableRevenue + totalClaimed)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Film Revenue Info */}
-                    {filmTotalRevenue > 0 && (
-                      <div className="bg-background-0/50 rounded-xl p-3 mb-4">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-typography-400">Film Total Revenue Distributed</span>
-                          <span className="font-mono text-typography-950">${formatUSDCx(filmTotalRevenue)}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Claim Button */}
-                    {claimableRevenue > 0 && (
-                      <button
-                        onClick={handleClaimRevenue}
-                        disabled={isClaiming}
-                        className="w-full py-3 bg-success-500 hover:bg-success-600 disabled:bg-background-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-success-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
-                      >
-                        {isClaiming ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Claiming...
-                          </>
-                        ) : (
-                          <>
-                            <DollarSign className="w-5 h-5" />
-                            Claim ${formatUSDCx(claimableRevenue)} USDCx
-                          </>
-                        )}
-                      </button>
-                    )}
-
-                    {claimableRevenue === 0 && filmTotalRevenue === 0 && (
-                      <p className="text-sm text-typography-400 text-center">
-                        No revenue has been distributed yet. Earnings will appear here when the film generates revenue.
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Withdrawal Card */}
-                <div className="bg-background-100/50 backdrop-blur-sm border border-background-300/50 rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-typography-950 mb-4 flex items-center gap-2">
-                    <ArrowDownToLine className="w-5 h-5 text-typography-400" />
-                    Withdraw Position
-                  </h3>
-                  
-                  <div className="bg-background-200/50 rounded-xl p-4 mb-4">
-                    <p className="text-sm text-typography-400 mb-3">On withdrawal you will receive:</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-typography-400 text-sm">Principal Return</span>
-                        <span className="font-mono text-typography-950">${formatUSDCx(userBalance)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-typography-400 text-sm">Pending Earnings</span>
-                        <span className="font-mono text-success-500">${formatUSDCx(claimableRevenue)}</span>
-                      </div>
-                      <div className="border-t border-background-300/50 pt-2 flex justify-between">
-                        <span className="text-typography-950 font-medium">Total Payout</span>
-                        <span className="font-mono font-bold text-primary-500">
-                          ${formatUSDCx(userBalance + claimableRevenue)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleWithdraw}
-                    disabled={isWithdrawing || userBalance <= 0}
-                    className="w-full py-3 bg-background-300 hover:bg-background-400 disabled:bg-background-200 disabled:cursor-not-allowed text-typography-950 font-semibold rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  >
-                    {isWithdrawing ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <ArrowDownToLine className="w-5 h-5" />
-                        Close Position & Withdraw All
-                      </>
-                    )}
-                  </button>
-                  
-                  <p className="text-xs text-typography-500 text-center mt-3">
-                    This will burn your tokens. You will no longer earn from future revenue.
-                  </p>
-                </div>
-
-                {/* Action Error */}
-                {actionError && (
-                  <div className="p-4 bg-error-500/10 border border-error-500/30 rounded-xl flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-error-500 shrink-0 mt-0.5" />
-                    <p className="text-error-400 text-sm">{actionError}</p>
-                  </div>
-                )}
-
-                {/* Claim Success */}
-                {claimTxId && (
-                  <div className="p-4 bg-success-500/10 border border-success-500/30 rounded-xl">
-                    <div className="flex items-center gap-2 text-success-400 mb-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span className="font-semibold">Revenue Claimed!</span>
-                    </div>
-                    <a
-                      href={`https://explorer.hiro.so/txid/${claimTxId}?chain=${NETWORK}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 font-medium transition-colors"
-                    >
-                      View on Explorer
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                )}
-
-                {/* Withdraw Success */}
-                {withdrawTxId && (
-                  <div className="p-4 bg-success-500/10 border border-success-500/30 rounded-xl">
-                    <div className="flex items-center gap-2 text-success-400 mb-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span className="font-semibold">Position Closed!</span>
-                    </div>
-                    <p className="text-sm text-typography-400 mb-3">
-                      Your tokens have been burned and USDCx returned to your wallet.
-                    </p>
-                    <a
-                      href={`https://explorer.hiro.so/txid/${withdrawTxId}?chain=${NETWORK}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 font-medium transition-colors"
-                    >
-                      View on Explorer
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                )}
               </section>
             )}
 
@@ -839,6 +671,169 @@ export default function FilmDetailPage() {
                   )}
                 </div>
               </div>
+
+              {/* Earnings & Withdrawal - Only show when user has position */}
+              {isConnected && userBalance > 0 && (
+                <>
+                  {/* Earnings Card */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-success-500/10 via-success-600/5 to-background-100 border border-success-500/20 rounded-2xl p-5">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-success-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <div className="relative">
+                      <h3 className="text-base font-semibold text-typography-950 mb-4 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-success-500" />
+                        Your Earnings
+                      </h3>
+                      
+                      <div className="space-y-3 mb-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-typography-400 text-sm">Claimable Now</span>
+                          <span className="text-lg font-bold text-success-500 font-mono">
+                            ${formatUSDCx(claimableRevenue)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-typography-400 text-sm">Already Claimed</span>
+                          <span className="text-lg font-bold text-typography-950 font-mono">
+                            ${formatUSDCx(totalClaimed)}
+                          </span>
+                        </div>
+                        <div className="border-t border-background-300/50 pt-3 flex justify-between items-center">
+                          <span className="text-typography-400 text-sm">Total Earnings</span>
+                          <span className="text-lg font-bold text-typography-950 font-mono">
+                            ${formatUSDCx(claimableRevenue + totalClaimed)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Claim Button */}
+                      {claimableRevenue > 0 && (
+                        <button
+                          onClick={handleClaimRevenue}
+                          disabled={isClaiming}
+                          className="w-full py-3 bg-success-500 hover:bg-success-600 disabled:bg-background-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-success-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
+                        >
+                          {isClaiming ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Claiming...
+                            </>
+                          ) : (
+                            <>
+                              <DollarSign className="w-5 h-5" />
+                              Claim ${formatUSDCx(claimableRevenue)} USDCx
+                            </>
+                          )}
+                        </button>
+                      )}
+
+                      {claimableRevenue === 0 && filmTotalRevenue === 0 && (
+                        <p className="text-xs text-typography-400 text-center">
+                          No revenue distributed yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Withdrawal Card */}
+                  <div className="bg-background-100/80 backdrop-blur-xl border border-background-300/50 rounded-2xl p-5">
+                    <h3 className="text-base font-semibold text-typography-950 mb-4 flex items-center gap-2">
+                      <ArrowDownToLine className="w-4 h-4 text-typography-400" />
+                      Withdraw Position
+                    </h3>
+                    
+                    <div className="bg-background-200/50 rounded-xl p-3 mb-4">
+                      <p className="text-xs text-typography-400 mb-2">On withdrawal you will receive:</p>
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-typography-400">Principal Return</span>
+                          <span className="font-mono text-typography-950">${formatUSDCx(userBalance)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-typography-400">Pending Earnings</span>
+                          <span className="font-mono text-success-500">${formatUSDCx(claimableRevenue)}</span>
+                        </div>
+                        <div className="border-t border-background-300/50 pt-1.5 flex justify-between text-sm">
+                          <span className="text-typography-950 font-medium">Total Payout</span>
+                          <span className="font-mono font-bold text-primary-500">
+                            ${formatUSDCx(userBalance + claimableRevenue)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleWithdraw}
+                      disabled={isWithdrawing || userBalance <= 0}
+                      className="w-full py-3 bg-background-300 hover:bg-background-400 disabled:bg-background-200 disabled:cursor-not-allowed text-typography-950 font-semibold rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    >
+                      {isWithdrawing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <ArrowDownToLine className="w-5 h-5" />
+                          Close Position & Withdraw All
+                        </>
+                      )}
+                    </button>
+                    
+                    <p className="text-xs text-typography-500 text-center mt-2">
+                      This will burn your tokens. You will no longer earn from future revenue.
+                    </p>
+                  </div>
+
+                  {/* Action Error */}
+                  {actionError && (
+                    <div className="p-3 bg-error-500/10 border border-error-500/30 rounded-xl flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-error-500 shrink-0 mt-0.5" />
+                      <p className="text-error-400 text-sm">{actionError}</p>
+                    </div>
+                  )}
+
+                  {/* Claim Success */}
+                  {claimTxId && (
+                    <div className="p-3 bg-success-500/10 border border-success-500/30 rounded-xl">
+                      <div className="flex items-center gap-2 text-success-400 mb-2">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="font-semibold text-sm">Revenue Claimed!</span>
+                      </div>
+                      <a
+                        href={`https://explorer.hiro.so/txid/${claimTxId}?chain=${NETWORK}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-xs text-primary-400 hover:text-primary-300 font-medium transition-colors"
+                      >
+                        View on Explorer
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Withdraw Success */}
+                  {withdrawTxId && (
+                    <div className="p-3 bg-success-500/10 border border-success-500/30 rounded-xl">
+                      <div className="flex items-center gap-2 text-success-400 mb-2">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="font-semibold text-sm">Position Closed!</span>
+                      </div>
+                      <p className="text-xs text-typography-400 mb-2">
+                        Your tokens have been burned and USDCx returned to your wallet.
+                      </p>
+                      <a
+                        href={`https://explorer.hiro.so/txid/${withdrawTxId}?chain=${NETWORK}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-xs text-primary-400 hover:text-primary-300 font-medium transition-colors"
+                      >
+                        View on Explorer
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
