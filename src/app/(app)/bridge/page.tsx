@@ -50,6 +50,7 @@ function BridgeContent() {
     switchToSepolia,
     publicClient,
     walletClient,
+    error: ethError,
   } = useEthereumWallet()
 
   const { isConnected: isStacksConnected, address: stacksAddress } = useStacksWallet()
@@ -69,6 +70,13 @@ function BridgeContent() {
   const recipientAddress = sendToOther ? customRecipient.trim() : stacksAddress
   const isValidRecipient = recipientAddress ? isValidStacksAddress(recipientAddress) : false
   const showRecipientError = sendToOther && customRecipient.trim() && !isValidRecipient
+
+  // Show toast when Ethereum wallet error occurs
+  useEffect(() => {
+    if (ethError) {
+      toast.error(ethError)
+    }
+  }, [ethError])
 
   useEffect(() => {
     async function fetchBalanceAndAllowance() {

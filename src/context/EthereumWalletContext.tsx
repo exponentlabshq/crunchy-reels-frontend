@@ -26,6 +26,7 @@ interface EthereumWalletState {
   chainId: number | null
   publicClient: PublicClient | null
   walletClient: WalletClient | null
+  error: string | null
   connect: () => Promise<void>
   disconnect: () => void
   switchToSepolia: () => Promise<void>
@@ -40,6 +41,7 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   const [chainId, setChainId] = useState<number | null>(null)
   const [publicClient, setPublicClient] = useState<PublicClient | null>(null)
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const initializeClients = useCallback((account: Address) => {
     if (typeof window === "undefined" || !window.ethereum) return
@@ -120,8 +122,12 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
   }, [initializeClients])
 
   const connect = useCallback(async () => {
+    setError(null)
+
     if (typeof window === "undefined" || !window.ethereum) {
-      throw new Error("MetaMask is not installed")
+      const errorMessage = "No Ethereum wallet found. Please install MetaMask or another wallet extension."
+      setError(errorMessage)
+      return
     }
 
     setIsConnecting(true)
@@ -142,9 +148,10 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
         })
         setChainId(parseInt(currentChainId as string, 16))
       }
-    } catch (error) {
-      console.error("Failed to connect:", error)
-      throw error
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to connect wallet"
+      setError(message)
+      console.error("Failed to connect:", err)
     } finally {
       setIsConnecting(false)
     }
@@ -200,6 +207,7 @@ export function EthereumWalletProvider({ children }: { children: ReactNode }) {
         chainId,
         publicClient,
         walletClient,
+        error,
         connect,
         disconnect,
         switchToSepolia,

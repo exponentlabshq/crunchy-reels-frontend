@@ -338,7 +338,7 @@ export default function FilmsPage() {
                         <div>
                           <p className="text-[10px] text-[#6B6B70] mb-0.5">Funded</p>
                           <p className={`text-sm font-semibold ${isFullyFunded ? "text-success-500" : "text-primary-500"}`}>
-                            {Math.min(fundingPercent, 100).toFixed(0)}%
+                            {Math.min(fundingPercent, 100).toFixed(2)}%
                           </p>
                         </div>
                         <div>
