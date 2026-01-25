@@ -84,9 +84,9 @@ function ShortsModalContent({
   const prevShort = allShorts[(currentIndex - 1 + allShorts.length) % allShorts.length]
   const shortsForCurrentFilm = allShorts.filter((s) => s.filmId === currentShort?.filmId)
 
-  // Threshold settings
-  const COMMIT_THRESHOLD = 0.25 // 25% of screen height
-  const VELOCITY_THRESHOLD = 0.5 // pixels per ms
+  // Threshold settings - lower values = less swipe needed
+  const COMMIT_THRESHOLD = 0.12 // 12% of screen height (reduced for easier mobile scrolling)
+  const VELOCITY_THRESHOLD = 0.3 // pixels per ms (more responsive to quick flicks)
 
   // Auto-hide controls after 3 seconds
   const resetHideTimer = useCallback(() => {
@@ -419,7 +419,7 @@ function ShortsModalContent({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 bg-black touch-none select-none overflow-hidden"
+      className="fixed inset-0 z-[60] bg-black touch-none select-none overflow-hidden"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

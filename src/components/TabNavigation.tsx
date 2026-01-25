@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowLeftRight, ChevronDown, Code, Film, User, Wallet, Zap } from "lucide-react";
+import { ArrowLeftRight, ChevronDown, Code, Film, User, Wallet, Zap, Eye, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useStacksWallet } from "@/context/StacksWalletContext";
 import { truncateAddress } from "@/utils/truncateAddress";
 
@@ -41,7 +41,13 @@ interface TabNavigationProps {
 
 export function TabNavigation({ variant }: TabNavigationProps) {
   const pathname = usePathname();
-  const { isConnected, address } = useStacksWallet();
+  const router = useRouter();
+  const { isConnected, isDemoMode, address, exitDemoMode } = useStacksWallet();
+
+  function handleExitDemoMode() {
+    exitDemoMode();
+    router.push("/connect-wallet");
+  }
 
   if (variant === "sidebar") {
     return (
@@ -89,7 +95,22 @@ export function TabNavigation({ variant }: TabNavigationProps) {
 
           {/* Sidebar Bottom */}
           <div className="flex flex-col gap-4">
-    
+            {/* Demo Mode Indicator & Exit Button */}
+            {isDemoMode && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                  <Eye className="w-4 h-4 text-amber-500" />
+                  <span className="text-[11px] font-medium text-amber-500">Demo Mode Active</span>
+                </div>
+                <button
+                  onClick={handleExitDemoMode}
+                  className="flex items-center justify-center gap-2 px-3 py-2.5 bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-4 h-4 text-white" />
+                  <span className="text-[12px] font-medium text-white">Connect Wallet</span>
+                </button>
+              </div>
+            )}
 
             {/* Divider */}
             <div className="h-px bg-[#2A2A2E]" />
@@ -114,7 +135,7 @@ export function TabNavigation({ variant }: TabNavigationProps) {
                 </div>
             
               </div>
-            ) : (
+            ) : !isDemoMode ? (
               <Link
                 href="/connect-wallet"
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -124,7 +145,7 @@ export function TabNavigation({ variant }: TabNavigationProps) {
                 </div>
                 <span className="text-[13px] text-[#8B8B90]">Connect Wallet</span>
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

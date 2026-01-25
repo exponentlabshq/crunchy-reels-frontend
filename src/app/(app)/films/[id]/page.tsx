@@ -24,6 +24,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useStacksWallet } from "@/context/StacksWalletContext";
+import { Eye } from "lucide-react";
 import {
   getFilm,
   getBalance,
@@ -66,7 +67,7 @@ const FILM_IMAGES = [
 export default function FilmDetailPage() {
   const params = useParams();
   const filmId = Number(params.id);
-  const { isConnected, address, connect } = useStacksWallet();
+  const { isConnected, isDemoMode, address, connect, exitDemoMode } = useStacksWallet();
 
   const [film, setFilm] = useState<FilmData | null>(null);
   const [userBalance, setUserBalance] = useState<number>(0);
@@ -544,7 +545,26 @@ export default function FilmDetailPage() {
                 </div>
 
                 <div className="p-5">
-                  {!isConnected ? (
+                  {isDemoMode ? (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                        <Eye className="w-8 h-8 text-amber-500" />
+                      </div>
+                      <p className="text-typography-950 font-semibold mb-2">Demo Mode</p>
+                      <p className="text-typography-400 text-sm mb-6">
+                        Connect a wallet to invest in this film and access all features.
+                      </p>
+                      <button
+                        onClick={() => {
+                          exitDemoMode();
+                          connect();
+                        }}
+                        className="w-full py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-primary-500/20 active:scale-[0.98]"
+                      >
+                        Connect Wallet to Invest
+                      </button>
+                    </div>
+                  ) : !isConnected ? (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 rounded-full bg-background-200 flex items-center justify-center mx-auto mb-4">
                         <Wallet className="w-8 h-8 text-typography-400" />

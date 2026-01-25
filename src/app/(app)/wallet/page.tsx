@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Wallet as WalletIcon, LogOut, Power, ChevronRight, ArrowUpRight, ExternalLink, Github, FileCode2 } from "lucide-react";
+import { Copy, Wallet as WalletIcon, LogOut, Power, ChevronRight, ArrowUpRight, ExternalLink, Github, FileCode2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
@@ -16,9 +16,14 @@ interface Balances {
 
 export default function WalletPage() {
   const router = useRouter();
-  const { isConnected, address, disconnectWallet } = useStacksWallet();
+  const { isConnected, isDemoMode, address, disconnectWallet, exitDemoMode } = useStacksWallet();
   const [balances, setBalances] = useState<Balances>({ stx: "0.00", usdcx: "0.00" });
   const [isLoading, setIsLoading] = useState(false);
+
+  function handleExitDemoMode() {
+    exitDemoMode();
+    router.push("/connect-wallet");
+  }
 
   const fetchBalances = useCallback(async () => {
     if (!address) return;
@@ -59,6 +64,180 @@ export default function WalletPage() {
   function handleDisconnect() {
     disconnectWallet();
     router.push("/onboarding");
+  }
+
+  // Demo mode view
+  if (isDemoMode) {
+    return (
+      <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
+        <div className="py-8 px-10">
+          {/* Page Header */}
+          <div className="flex flex-col gap-2 mb-7">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2">
+                <h1 className="text-[38px] font-normal text-white font-display tracking-[-1px]">
+                  Wallet
+                </h1>
+                <p className="text-sm text-[#6B6B70]">
+                  Connect your wallet to access full features
+                </p>
+              </div>
+            </div>
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#6B6B70]">Dashboard</span>
+              <ChevronRight className="w-3.5 h-3.5 text-[#4A4A4E]" />
+              <span className="text-xs text-white">Wallet</span>
+            </div>
+          </div>
+
+          {/* Demo Mode Notice Card */}
+          <div className="bg-[#111113] border border-amber-500/20 rounded-xl p-6 mb-7">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                <Eye className="w-6 h-6 text-amber-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-white mb-2">Demo Mode Active</h3>
+                <p className="text-sm text-[#6B6B70] mb-4">
+                  You&apos;re exploring ShortStarter in demo mode. To view your wallet balance, 
+                  invest in films, and access all features, connect your Stacks wallet.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={handleExitDemoMode}
+                    className="flex items-center justify-center gap-2 px-5 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg transition-colors"
+                  >
+                    <WalletIcon className="w-4 h-4" />
+                    <span>Connect Wallet</span>
+                  </button>
+                  <Link
+                    href="/films"
+                    className="flex items-center justify-center gap-2 px-5 py-3 border border-[#2A2A2E] text-white font-medium rounded-lg hover:bg-[#1A1A1D] transition-colors"
+                  >
+                    <span>Continue Exploring</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* What you can do in demo mode */}
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-6 mb-7">
+            <h3 className="text-sm font-semibold text-white mb-4">What you can do in demo mode</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-success-500/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-success-500 text-sm">✓</span>
+                </div>
+                <div>
+                  <p className="text-sm text-white font-medium">Browse Film Projects</p>
+                  <p className="text-xs text-[#6B6B70]">Explore all available films and their details</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-success-500/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-success-500 text-sm">✓</span>
+                </div>
+                <div>
+                  <p className="text-sm text-white font-medium">View Funding Progress</p>
+                  <p className="text-xs text-[#6B6B70]">See how much each film has raised</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-error-500/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-error-500 text-sm">✕</span>
+                </div>
+                <div>
+                  <p className="text-sm text-white font-medium">Invest in Films</p>
+                  <p className="text-xs text-[#6B6B70]">Requires wallet connection</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-error-500/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-error-500 text-sm">✕</span>
+                </div>
+                <div>
+                  <p className="text-sm text-white font-medium">View Balances</p>
+                  <p className="text-xs text-[#6B6B70]">Requires wallet connection</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Developer Resources - Keep accessible in demo mode */}
+          <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-[10px] bg-[#5546FF]/10 flex items-center justify-center">
+                <FileCode2 className="w-5 h-5 text-[#5546FF]" />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-semibold text-white">Developer Resources</span>
+                <span className="text-xs text-[#6B6B70]">Smart contract & source code</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <a
+                href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.shortstarter?chain=testnet"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6558f9]/50 hover:bg-[#6558f9]/5 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#5546FF]/10 flex items-center justify-center">
+                    <span className="text-[#6558f9] text-xs font-bold">S</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[13px] font-medium text-white">ShortStarter Contract Blockchain Explorer</span>
+                    <span className="text-[11px] text-[#6B6B70]">View on Hiro Explorer · Testnet</span>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-[#6558f9] transition-colors" />
+              </a>
+
+              <a
+                href="https://github.com/aydendevnova/shortstarter-usdcx-contracts"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A2A2E] flex items-center justify-center">
+                    <Github className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[13px] font-medium text-white">Smart Contracts Source Code</span>
+                    <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-contracts</span>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
+              </a>
+
+
+            {/* Frontend GitHub Link */}
+            <a
+              href="https://github.com/aydendevnova/shortstarter-usdcx-frontend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#2A2A2E] flex items-center justify-center">
+                  <Github className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-medium text-white">Frontend Application Source Code</span>
+                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-frontend</span>
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
+            </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!isConnected) {

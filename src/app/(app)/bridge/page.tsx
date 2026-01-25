@@ -14,8 +14,10 @@ import toast from "react-hot-toast"
 import { parseUnits, formatUnits } from "viem"
 import { sepolia } from "viem/chains"
 
+import { useRouter } from "next/navigation"
 import { useEthereumWallet, EthereumWalletProvider } from "@/context/EthereumWalletContext"
 import { useStacksWallet } from "@/context/StacksWalletContext"
+import { Eye, Wallet } from "lucide-react"
 import {
   SEPOLIA_USDC,
   SEPOLIA_XRESERVE,
@@ -41,6 +43,7 @@ export default function BridgePage() {
 }
 
 function BridgeContent() {
+  const router = useRouter()
   const {
     isConnected: isEthConnected,
     isConnecting: isEthConnecting,
@@ -53,7 +56,12 @@ function BridgeContent() {
     error: ethError,
   } = useEthereumWallet()
 
-  const { isConnected: isStacksConnected, address: stacksAddress } = useStacksWallet()
+  const { isConnected: isStacksConnected, isDemoMode, address: stacksAddress, exitDemoMode } = useStacksWallet()
+
+  function handleExitDemoMode() {
+    exitDemoMode()
+    router.push("/connect-wallet")
+  }
 
   const [amount, setAmount] = useState("")
   const [step, setStep] = useState<BridgeStep>("idle")
@@ -202,6 +210,41 @@ function BridgeContent() {
     setTxHash(null)
     setSendToOther(false)
     setCustomRecipient("")
+  }
+
+  // Demo mode - Bridge not available
+  if (isDemoMode) {
+    return (
+      <div className="flex-1 bg-[#0A0A0B] overflow-y-auto pb-24 lg:pb-8">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+          <div className="w-full max-w-md">
+            <div className="bg-[#111113] border border-amber-500/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Eye className="w-8 h-8 text-amber-500" />
+              </div>
+              <h2 className="text-xl font-semibold text-white mb-2">Demo Mode Active</h2>
+              <p className="text-sm text-[#6B6B70] mb-6">
+                The bridge requires a connected wallet to transfer assets between chains.
+                Connect your wallet to access this feature.
+              </p>
+              <button
+                onClick={handleExitDemoMode}
+                className="w-full py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <Wallet className="w-4 h-4" />
+                Connect Wallet
+              </button>
+              <button
+                onClick={() => router.push("/films")}
+                className="w-full mt-3 py-3 text-[#8B8B90] hover:text-white text-sm font-medium transition-colors"
+              >
+                Continue Exploring
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Not connected to either wallet

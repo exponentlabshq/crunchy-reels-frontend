@@ -209,14 +209,14 @@ export default function ContractTesterPage() {
               <p className="text-xs text-emerald-500 font-medium">ShortStarter • USDCx on Stacks</p>
             </div>
           </div>
-          {!isConnected && (
-            <span className="text-xs text-amber-500 flex items-center gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-lg">
+        
+        </div>
+        {!isConnected && (
+            <span className="text-xs text-amber-500 flex items-center gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-lg mb-2">
               <AlertCircle className="w-3.5 h-3.5" />
-              Wallet not connected
+              Wallet not connected - Write functions will not work
             </span>
           )}
-        </div>
-
         {/* Contract Selector */}
         {contractAddress.length === 0 && (
           <div className="mb-4">

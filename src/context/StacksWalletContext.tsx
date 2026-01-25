@@ -16,13 +16,18 @@ import {
 } from "@stacks/connect";
 import { IS_MAINNET } from "@/constants";
 
+const DEMO_MODE_KEY = "shortstarter_demo_mode";
+
 interface StacksWalletState {
   isConnected: boolean;
   isConnecting: boolean;
+  isDemoMode: boolean;
   address: string | null;
   stxAddress: string | null;
   connect: () => Promise<void>;
   disconnectWallet: () => void;
+  enterDemoMode: () => void;
+  exitDemoMode: () => void;
 }
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
@@ -33,11 +38,19 @@ const StacksWalletContext = createContext<StacksWalletState | null>(null);
 export function StacksWalletProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
   const [stxAddress, setStxAddress] = useState<string | null>(null);
 
-  // Check for existing session on mount
+  // Check for existing session or demo mode on mount
   useEffect(() => {
+    // Check for demo mode first
+    const storedDemoMode = localStorage.getItem(DEMO_MODE_KEY);
+    if (storedDemoMode === "true") {
+      setIsDemoMode(true);
+      return;
+    }
+
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
       const networkAddress = IS_MAINNET
@@ -91,6 +104,18 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
     setAddress(null);
     setStxAddress(null);
     setIsConnected(false);
+    setIsDemoMode(false);
+    localStorage.removeItem(DEMO_MODE_KEY);
+  }, []);
+
+  const enterDemoMode = useCallback(() => {
+    localStorage.setItem(DEMO_MODE_KEY, "true");
+    setIsDemoMode(true);
+  }, []);
+
+  const exitDemoMode = useCallback(() => {
+    localStorage.removeItem(DEMO_MODE_KEY);
+    setIsDemoMode(false);
   }, []);
 
   return (
@@ -98,10 +123,13 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
       value={{
         isConnected,
         isConnecting,
+        isDemoMode,
         address,
         stxAddress,
         connect,
         disconnectWallet,
+        enterDemoMode,
+        exitDemoMode,
       }}
     >
       {children}
