@@ -4,10 +4,10 @@ export const IS_MAINNET = NETWORK === "mainnet"
 
 // Contract addresses - update these after deployment
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? ""
-export const CONTRACT_NAME = "cineblock"
+export const CONTRACT_NAME = "shortstarter"
 
 // App configuration
-export const APP_NAME = "CineBlock"
+export const APP_NAME = "ShortStarter"
 export const APP_DESCRIPTION = "Tokenized Film Investment on Bitcoin"
 export const APP_ICON = "/icon.png"
 

@@ -37,14 +37,14 @@ import {
   getAccountBalances,
 } from "@/utils/stacksApi";
 import {
-  CINEBLOCK_ADDRESS,
-  CINEBLOCK_NAME,
+  SHORTSTARTER_ADDRESS,
+  SHORTSTARTER_NAME,
   USDCX_ADDRESS,
   USDCX_NAME,
   USDCX_ASSET_ID,
-  CINEBLOCK_FUNCTIONS,
-  CINEBLOCK_MAPS,
-  CINEBLOCK_VARS,
+  SHORTSTARTER_FUNCTIONS,
+  SHORTSTARTER_MAPS,
+  SHORTSTARTER_VARS,
   formatUSDCx,
   parseUSDCx,
   USDCX_DECIMALS,
@@ -60,6 +60,7 @@ import {
   depositRevenue,
   claimRevenue,
   withdrawAndClaim,
+  editFilm,
 } from "@/utils/contractCalls";
 import { USDCX } from "@/utils/contractConfig";
 
@@ -76,7 +77,7 @@ export default function ContractTesterPage() {
   const { isConnected, address } = useStacksWallet();
   const [output, setOutput] = useState<OutputResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedContract, setSelectedContract] = useState<"cineblock" | "usdcx">("cineblock");
+  const [selectedContract, setSelectedContract] = useState<"shortstarter" | "usdcx">("shortstarter");
   const [activeTab, setActiveTab] = useState<Tab>("user");
 
   // Form states
@@ -99,6 +100,10 @@ export default function ContractTesterPage() {
     usdcxAmount: "100",
     usdcxRecipient: "",
     revenueAmount: "1000",
+    // Edit film form fields
+    editFilmId: "1",
+    editTitle: "",
+    editDescription: "",
   });
 
   // USDCx contract config state
@@ -110,8 +115,8 @@ export default function ContractTesterPage() {
     testnet: `${USDCX.testnet.ADDRESS}.${USDCX.testnet.NAME}`,
   };
 
-  const contractAddress = selectedContract === "cineblock" ? CINEBLOCK_ADDRESS : USDCX_ADDRESS;
-  const contractName = selectedContract === "cineblock" ? CINEBLOCK_NAME : USDCX_NAME;
+  const contractAddress = selectedContract === "shortstarter" ? SHORTSTARTER_ADDRESS : USDCX_ADDRESS;
+  const contractName = selectedContract === "shortstarter" ? SHORTSTARTER_NAME : USDCX_NAME;
 
   async function handleApiCall(callFn: () => Promise<unknown>) {
     setLoading(true);
@@ -201,7 +206,7 @@ export default function ContractTesterPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-typography-950">Contract Tester</h1>
-              <p className="text-xs text-emerald-500 font-medium">CineBlock • USDCx on Stacks</p>
+              <p className="text-xs text-emerald-500 font-medium">ShortStarter • USDCx on Stacks</p>
             </div>
           </div>
           {!isConnected && (
@@ -216,7 +221,7 @@ export default function ContractTesterPage() {
         {contractAddress.length === 0 && (
           <div className="mb-4">
             <p className="text-xs text-red-500 font-mono bg-red-500/10 px-3 py-2 rounded-lg">
-              No contract address found for Cineblock
+              No contract address found for ShortStarter
             </p>
           </div>
         )}
@@ -224,10 +229,10 @@ export default function ContractTesterPage() {
           <div className="flex items-center gap-4">
             <select
               value={selectedContract}
-              onChange={(e) => setSelectedContract(e.target.value as "cineblock" | "usdcx")}
+              onChange={(e) => setSelectedContract(e.target.value as "shortstarter" | "usdcx")}
               className="appearance-none bg-background-0 border border-background-300 rounded-lg px-3 py-2 text-sm text-typography-950 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer"
             >
-              <option value="cineblock">🎬 CineBlock</option>
+              <option value="shortstarter">🎬 ShortStarter</option>
               <option value="usdcx">💵 USDCx</option>
             </select>
             <code className="flex-1 text-xs text-typography-500 font-mono truncate bg-background-0 px-3 py-2 rounded-lg border border-background-200">
@@ -313,7 +318,7 @@ export default function ContractTesterPage() {
               <div className={cardClass}>
                 <CardHeader icon={Play} title="Read-Only Functions" />
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {CINEBLOCK_FUNCTIONS.readOnly
+                  {SHORTSTARTER_FUNCTIONS.readOnly
                     .filter((fn) => fn.args.length === 0)
                     .map((fn) => (
                       <button
@@ -321,10 +326,10 @@ export default function ContractTesterPage() {
                         onClick={() =>
                           handleApiCall(async () => {
                             const result = await callReadOnlyFunction(
-                              CINEBLOCK_ADDRESS,
-                              CINEBLOCK_NAME,
+                              SHORTSTARTER_ADDRESS,
+                              SHORTSTARTER_NAME,
                               fn.name,
-                              CINEBLOCK_ADDRESS,
+                              SHORTSTARTER_ADDRESS,
                               []
                             );
                             if (result.okay && result.result) {
@@ -334,7 +339,7 @@ export default function ContractTesterPage() {
                           })
                         }
                         className={btnSecondary}
-                        disabled={loading || !CINEBLOCK_ADDRESS}
+                        disabled={loading || !SHORTSTARTER_ADDRESS}
                       >
                         {fn.name}
                       </button>
@@ -354,10 +359,10 @@ export default function ContractTesterPage() {
                     onClick={() =>
                       handleApiCall(async () => {
                         const result = await callReadOnlyFunction(
-                          CINEBLOCK_ADDRESS,
-                          CINEBLOCK_NAME,
+                          SHORTSTARTER_ADDRESS,
+                          SHORTSTARTER_NAME,
                           "get-film",
-                          CINEBLOCK_ADDRESS,
+                          SHORTSTARTER_ADDRESS,
                           [`0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`]
                         );
                         if (result.okay && result.result) {
@@ -367,7 +372,7 @@ export default function ContractTesterPage() {
                       })
                     }
                     className={btnPrimary}
-                    disabled={loading || !CINEBLOCK_ADDRESS}
+                    disabled={loading || !SHORTSTARTER_ADDRESS}
                   >
                     Get Film
                   </button>
@@ -387,10 +392,10 @@ export default function ContractTesterPage() {
                       handleApiCall(async () => {
                         const usdcxMicro = parseUSDCx(writeForm.investAmount);
                         const result = await callReadOnlyFunction(
-                          CINEBLOCK_ADDRESS,
-                          CINEBLOCK_NAME,
+                          SHORTSTARTER_ADDRESS,
+                          SHORTSTARTER_NAME,
                           "preview-purchase",
-                          CINEBLOCK_ADDRESS,
+                          SHORTSTARTER_ADDRESS,
                           [
                             `0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`,
                             `0x${serializeArg(uintCV(usdcxMicro))}`,
@@ -403,7 +408,7 @@ export default function ContractTesterPage() {
                       })
                     }
                     className={btnGreen}
-                    disabled={loading || !CINEBLOCK_ADDRESS}
+                    disabled={loading || !SHORTSTARTER_ADDRESS}
                   >
                     Preview
                   </button>
@@ -424,10 +429,10 @@ export default function ContractTesterPage() {
                         const addr = writeForm.adminAddress || address;
                         if (!addr) throw new Error("No address");
                         const result = await callReadOnlyFunction(
-                          CINEBLOCK_ADDRESS,
-                          CINEBLOCK_NAME,
+                          SHORTSTARTER_ADDRESS,
+                          SHORTSTARTER_NAME,
                           "is-admin",
-                          CINEBLOCK_ADDRESS,
+                          SHORTSTARTER_ADDRESS,
                           [`0x${serializeArg(principalCV(addr))}`]
                         );
                         if (result.okay && result.result) {
@@ -437,7 +442,7 @@ export default function ContractTesterPage() {
                       })
                     }
                     className={btnPrimary}
-                    disabled={loading || !CINEBLOCK_ADDRESS}
+                    disabled={loading || !SHORTSTARTER_ADDRESS}
                   >
                     Is Admin?
                   </button>
@@ -461,10 +466,10 @@ export default function ContractTesterPage() {
                       onClick={() =>
                         handleApiCall(async () => {
                           const result = await callReadOnlyFunction(
-                            CINEBLOCK_ADDRESS,
-                            CINEBLOCK_NAME,
+                            SHORTSTARTER_ADDRESS,
+                            SHORTSTARTER_NAME,
                             "get-film-revenue",
-                            CINEBLOCK_ADDRESS,
+                            SHORTSTARTER_ADDRESS,
                             [`0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`]
                           );
                           if (result.okay && result.result) {
@@ -482,7 +487,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnGreen}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                     >
                       Film Revenue
                     </button>
@@ -495,10 +500,10 @@ export default function ContractTesterPage() {
                           const addr = writeForm.adminAddress || address;
                           if (!addr) throw new Error("No address");
                           const result = await callReadOnlyFunction(
-                            CINEBLOCK_ADDRESS,
-                            CINEBLOCK_NAME,
+                            SHORTSTARTER_ADDRESS,
+                            SHORTSTARTER_NAME,
                             "get-claimable-revenue",
-                            CINEBLOCK_ADDRESS,
+                            SHORTSTARTER_ADDRESS,
                             [
                               `0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`,
                               `0x${serializeArg(principalCV(addr))}`,
@@ -516,7 +521,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnGreen}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                     >
                       Claimable
                     </button>
@@ -526,10 +531,10 @@ export default function ContractTesterPage() {
                           const addr = writeForm.adminAddress || address;
                           if (!addr) throw new Error("No address");
                           const result = await callReadOnlyFunction(
-                            CINEBLOCK_ADDRESS,
-                            CINEBLOCK_NAME,
+                            SHORTSTARTER_ADDRESS,
+                            SHORTSTARTER_NAME,
                             "preview-withdrawal",
-                            CINEBLOCK_ADDRESS,
+                            SHORTSTARTER_ADDRESS,
                             [
                               `0x${serializeArg(uintCV(parseInt(writeForm.filmId)))}`,
                               `0x${serializeArg(principalCV(addr))}`,
@@ -552,7 +557,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnSecondary}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                     >
                       Preview
                     </button>
@@ -581,10 +586,10 @@ export default function ContractTesterPage() {
                       handleApiCall(async () => {
                         const args = functionArgs ? functionArgs.split(",").map((s) => s.trim()) : [];
                         const result = await callReadOnlyFunction(
-                          CINEBLOCK_ADDRESS,
-                          CINEBLOCK_NAME,
+                          SHORTSTARTER_ADDRESS,
+                          SHORTSTARTER_NAME,
                           functionName,
-                          CINEBLOCK_ADDRESS,
+                          SHORTSTARTER_ADDRESS,
                           args
                         );
                         if (result.okay && result.result) {
@@ -594,7 +599,7 @@ export default function ContractTesterPage() {
                       })
                     }
                     className={`${btnPrimary} w-full`}
-                    disabled={loading || !functionName || !CINEBLOCK_ADDRESS}
+                    disabled={loading || !functionName || !SHORTSTARTER_ADDRESS}
                   >
                     <Play className="w-3.5 h-3.5" />
                     Execute
@@ -606,12 +611,12 @@ export default function ContractTesterPage() {
               <div className={cardClass}>
                 <CardHeader icon={FileCode} title="Data Variables" />
                 <div className="flex flex-wrap gap-2">
-                  {CINEBLOCK_VARS.map((v) => (
+                  {SHORTSTARTER_VARS.map((v) => (
                     <button
                       key={v.name}
                       onClick={() =>
                         handleApiCall(async () => {
-                          const result = await getDataVar(CINEBLOCK_ADDRESS, CINEBLOCK_NAME, v.name);
+                          const result = await getDataVar(SHORTSTARTER_ADDRESS, SHORTSTARTER_NAME, v.name);
                           if (result.data) {
                             return { ...result, decoded: cvToJSON(deserializeCV(result.data)) };
                           }
@@ -619,7 +624,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnSecondary}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                       title={v.type}
                     >
                       {v.name}
@@ -661,7 +666,7 @@ export default function ContractTesterPage() {
                     )
                   }
                   className={`${btnGreen} w-full`}
-                  disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                 >
                   Invest ${writeForm.investAmount} USDCx
                 </button>
@@ -678,7 +683,7 @@ export default function ContractTesterPage() {
                     )
                   }
                   className={`${btnOrange} w-full`}
-                  disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                 >
                   Demo Invest
                 </button>
@@ -706,7 +711,7 @@ export default function ContractTesterPage() {
                         handleContractCall(() => claimRevenue(parseInt(writeForm.filmId), address!))
                       }
                       className={`${btnGreen} flex-1`}
-                      disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                     >
                       <DollarSign className="w-3.5 h-3.5" />
                       Claim Revenue
@@ -732,7 +737,7 @@ export default function ContractTesterPage() {
                         handleContractCall(() => withdrawAndClaim(parseInt(writeForm.filmId), address!))
                       }
                       className={`${btnSecondary} flex-1`}
-                      disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                     >
                       <ArrowDownToLine className="w-3.5 h-3.5" />
                       Withdraw All
@@ -752,7 +757,7 @@ export default function ContractTesterPage() {
                   onChange={(e) => setMapName(e.target.value)}
                   className={`${inputClass} mb-3`}
                 >
-                  {CINEBLOCK_MAPS.map((m) => (
+                  {SHORTSTARTER_MAPS.map((m) => (
                     <option key={m.name} value={m.name}>
                       {m.name} ({m.keyType})
                     </option>
@@ -773,7 +778,7 @@ export default function ContractTesterPage() {
                         handleApiCall(async () => {
                           const key = tupleCV({ "film-id": uintCV(parseInt(mapKey)) });
                           const hexKey = `0x${serializeArg(key)}`;
-                          const result = await getMapEntry(CINEBLOCK_ADDRESS, CINEBLOCK_NAME, mapName, hexKey);
+                          const result = await getMapEntry(SHORTSTARTER_ADDRESS, SHORTSTARTER_NAME, mapName, hexKey);
                           if (result.data) {
                             return { ...result, decoded: cvToJSON(deserializeCV(result.data)) };
                           }
@@ -781,7 +786,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnPrimary}
-                      disabled={loading || !mapKey || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !mapKey || !SHORTSTARTER_ADDRESS}
                     >
                       Query
                     </button>
@@ -802,7 +807,7 @@ export default function ContractTesterPage() {
                         handleApiCall(async () => {
                           const key = tupleCV({ "token-id": uintCV(parseInt(mapKey)) });
                           const hexKey = `0x${serializeArg(key)}`;
-                          const result = await getMapEntry(CINEBLOCK_ADDRESS, CINEBLOCK_NAME, mapName, hexKey);
+                          const result = await getMapEntry(SHORTSTARTER_ADDRESS, SHORTSTARTER_NAME, mapName, hexKey);
                           if (result.data) {
                             return { ...result, decoded: cvToJSON(deserializeCV(result.data)) };
                           }
@@ -810,7 +815,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnPrimary}
-                      disabled={loading || !mapKey || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !mapKey || !SHORTSTARTER_ADDRESS}
                     >
                       Query
                     </button>
@@ -833,7 +838,7 @@ export default function ContractTesterPage() {
                           if (!addr) throw new Error("No address");
                           const key = tupleCV({ admin: principalCV(addr) });
                           const hexKey = `0x${serializeArg(key)}`;
-                          const result = await getMapEntry(CINEBLOCK_ADDRESS, CINEBLOCK_NAME, mapName, hexKey);
+                          const result = await getMapEntry(SHORTSTARTER_ADDRESS, SHORTSTARTER_NAME, mapName, hexKey);
                           if (result.data) {
                             return { ...result, decoded: cvToJSON(deserializeCV(result.data)) };
                           }
@@ -841,7 +846,7 @@ export default function ContractTesterPage() {
                         })
                       }
                       className={btnPrimary}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                     >
                       Query
                     </button>
@@ -981,7 +986,7 @@ export default function ContractTesterPage() {
                     handleContractCall(() => setUsdcxContract(usdcxContractOptions[selectedUsdcxNetwork], address!))
                   }
                   className={`${btnOrange} w-full mb-4`}
-                  disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                 >
                   <Send className="w-3.5 h-3.5" />
                   Set USDCx Contract
@@ -1003,10 +1008,10 @@ export default function ContractTesterPage() {
                         setLoading(true);
                         try {
                           const result = await callReadOnlyFunction(
-                            CINEBLOCK_ADDRESS,
-                            CINEBLOCK_NAME,
+                            SHORTSTARTER_ADDRESS,
+                            SHORTSTARTER_NAME,
                             "get-usdcx-contract",
-                            CINEBLOCK_ADDRESS,
+                            SHORTSTARTER_ADDRESS,
                             []
                           );
                           if (result.okay && result.result) {
@@ -1024,7 +1029,7 @@ export default function ContractTesterPage() {
                         }
                       }}
                       className={btnSecondary}
-                      disabled={loading || !CINEBLOCK_ADDRESS}
+                      disabled={loading || !SHORTSTARTER_ADDRESS}
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                     </button>
@@ -1136,10 +1141,64 @@ export default function ContractTesterPage() {
                     )
                   }
                   className={`${btnPrimary} w-full`}
-                  disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                 >
                   <Send className="w-3.5 h-3.5" />
                   Create Film
+                </button>
+              </div>
+
+              {/* Edit Film */}
+              <div className={cardClass}>
+                <CardHeader icon={Film} title="Edit Film" badge="ADMIN" badgeColor="amber" />
+                <p className="text-xs text-typography-500 mb-3">
+                  Edit an existing film&apos;s title and description. Cap cannot be changed.
+                </p>
+                <div className="mb-3">
+                  <label className={labelClass}>Film ID</label>
+                  <input
+                    type="number"
+                    value={writeForm.editFilmId}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, editFilmId: e.target.value }))}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className={labelClass}>New Title</label>
+                  <input
+                    type="text"
+                    value={writeForm.editTitle}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, editTitle: e.target.value }))}
+                    placeholder="Enter new title..."
+                    className={inputClass}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className={labelClass}>New Description</label>
+                  <input
+                    type="text"
+                    value={writeForm.editDescription}
+                    onChange={(e) => setWriteForm((f) => ({ ...f, editDescription: e.target.value }))}
+                    placeholder="Enter new description..."
+                    className={inputClass}
+                  />
+                </div>
+                <button
+                  onClick={() =>
+                    handleContractCall(() =>
+                      editFilm(
+                        parseInt(writeForm.editFilmId),
+                        writeForm.editTitle,
+                        writeForm.editDescription,
+                        address!
+                      )
+                    )
+                  }
+                  className={`${btnOrange} w-full`}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS || !writeForm.editTitle || !writeForm.editDescription}
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Edit Film
                 </button>
               </div>
 
@@ -1176,7 +1235,7 @@ export default function ContractTesterPage() {
                     )
                   }
                   className={`${btnOrange} w-full`}
-                  disabled={loading || !isConnected || !CINEBLOCK_ADDRESS}
+                  disabled={loading || !isConnected || !SHORTSTARTER_ADDRESS}
                 >
                   <Send className="w-3.5 h-3.5" />
                   Deposit ${writeForm.revenueAmount} Revenue

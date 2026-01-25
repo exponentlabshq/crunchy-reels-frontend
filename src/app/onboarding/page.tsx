@@ -77,7 +77,7 @@ export default function OnboardingPage() {
       {/* Logo */}
       <div className="absolute top-8 left-0 right-0 z-30 text-center">
         <h1 className="text-2xl font-bold text-primary-500 font-sans tracking-tight">
-          CineBlock
+          ShortStarter
         </h1>
       </div>
 

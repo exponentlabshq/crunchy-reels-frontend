@@ -79,7 +79,7 @@ export default function ConnectWalletPage() {
           </button>
 
           <p className="text-center text-typography-500 text-xs mt-4">
-            A Stacks wallet is required to use CineBlock
+            A Stacks wallet is required to use ShortStarter
           </p>
         </div>
       </div>

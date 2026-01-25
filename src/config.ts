@@ -1,8 +1,8 @@
 export const config: Config = {
   socials: {
-    twitter: "https://twitter.com/cineblock",
+    twitter: "https://twitter.com/shortstarter",
     discord: "https://discord.com",
-    homepage: "https://cineblock.io",
+    homepage: "https://shortstarter.io",
   },
 
   defaultAsset: {
@@ -12,7 +12,7 @@ export const config: Config = {
 
   ourStory: {
     title: "The Future of Film Investment",
-    description: `CineBlock democratizes film investment by enabling fractional ownership of tokenized film projects. Own a piece of cinema history through blockchain technology on Bitcoin's most secure Layer 2 - Stacks. Our mission is to make film investment accessible, transparent, and rewarding for everyone.`,
+    description: `ShortStarter democratizes film investment by enabling fractional ownership of tokenized film projects. Own a piece of cinema history through blockchain technology on Bitcoin's most secure Layer 2 - Stacks. Our mission is to make film investment accessible, transparent, and rewarding for everyone.`,
     discordLink: "https://discord.com",
   },
 }

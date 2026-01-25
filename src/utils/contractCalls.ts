@@ -19,8 +19,8 @@ import {
 import { STACKS_TESTNET, STACKS_MAINNET } from "@stacks/network";
 import { IS_MAINNET, NETWORK } from "@/constants";
 import {
-  CINEBLOCK_ADDRESS,
-  CINEBLOCK_NAME,
+  SHORTSTARTER_ADDRESS,
+  SHORTSTARTER_NAME,
   USDCX_ADDRESS,
   USDCX_NAME,
   USDCX_ASSET_ID,
@@ -107,106 +107,106 @@ export function parseReadOnlyResult(result: { okay?: boolean; result?: string })
 }
 
 // ============================================
-// CINEBLOCK - READ ONLY CALLS
+// SHORTSTARTER - READ ONLY CALLS
 // ============================================
 
 export async function getLastFilmId() {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-last-film-id",
     functionArgs: [],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getTotalUsdcxCollected() {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-total-usdcx-collected",
     functionArgs: [],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getUsdcxContract() {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-usdcx-contract",
     functionArgs: [],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getFilm(filmId: number) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-film",
     functionArgs: [uintCV(filmId)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getBalance(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-balance",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getTokensAvailable(filmId: number) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-tokens-available",
     functionArgs: [uintCV(filmId)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getHolderCount(filmId: number) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-holder-count",
     functionArgs: [uintCV(filmId)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function isAdmin(address: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "is-admin",
     functionArgs: [principalCV(address)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function previewPurchase(filmId: number, usdcxAmount: number) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "preview-purchase",
     functionArgs: [uintCV(filmId), uintCV(usdcxAmount)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getPortfolioItem(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-portfolio-item",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
@@ -216,56 +216,56 @@ export async function getPortfolioItem(filmId: number, holder: string) {
 
 export async function getFilmRevenue(filmId: number) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-film-revenue",
     functionArgs: [uintCV(filmId)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getClaimableRevenue(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-claimable-revenue",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getUserTotalClaimed(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-user-total-claimed",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function previewWithdrawal(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "preview-withdrawal",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 export async function getUserPosition(filmId: number, holder: string) {
   return readContract({
-    contractAddress: CINEBLOCK_ADDRESS,
-    contractName: CINEBLOCK_NAME,
+    contractAddress: SHORTSTARTER_ADDRESS,
+    contractName: SHORTSTARTER_NAME,
     functionName: "get-user-position",
     functionArgs: [uintCV(filmId), principalCV(holder)],
-    senderAddress: CINEBLOCK_ADDRESS,
+    senderAddress: SHORTSTARTER_ADDRESS,
   });
 }
 
 // ============================================
-// CINEBLOCK - WRITE CALLS (using Cl.* for @stacks/connect)
+// SHORTSTARTER - WRITE CALLS (using Cl.* for @stacks/connect)
 // ============================================
 
 export async function createFilm(
@@ -275,7 +275,7 @@ export async function createFilm(
   maxSupply: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.stringAscii(title),
@@ -306,7 +306,7 @@ export async function setFilmActive(
   isActive: boolean,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),
@@ -330,19 +330,54 @@ export async function setFilmActive(
   return txid;
 }
 
+// Edit film title and description (admin only)
+// Note: max-supply (cap) cannot be changed after creation
+export async function editFilm(
+  filmId: number,
+  newTitle: string,
+  newDescription: string,
+  userAddress: string
+): Promise<string> {
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
+
+  const functionArgs = [
+    Cl.uint(filmId),
+    Cl.stringAscii(newTitle),
+    Cl.stringAscii(newDescription),
+  ];
+
+  const res = await request("stx_callContract", {
+    contract: contractId,
+    functionName: "edit-film",
+    functionArgs,
+    address: userAddress,
+    network: NETWORK_ENV,
+    postConditionMode: "deny",
+  });
+
+  const txid = (res as { txid?: string; transaction?: string })?.txid ||
+               (res as { txid?: string; transaction?: string })?.transaction;
+  if (!txid) throw new Error("No transaction ID returned");
+
+  console.log("🎉 Film edited:", txid);
+  console.log("🔗 Explorer:", `https://explorer.hiro.so/txid/${txid}?chain=${NETWORK_ENV}`);
+
+  return txid;
+}
+
 // Buy film tokens with USDCx (1:1 exchange, real token transfer)
 export async function buyFilmTokens(
   filmId: number,
   usdcxAmount: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   // Debug logging
   console.log("🔍 buyFilmTokens Debug:", {
     contractId,
-    CINEBLOCK_ADDRESS,
-    CINEBLOCK_NAME,
+    SHORTSTARTER_ADDRESS,
+    SHORTSTARTER_NAME,
     USDCX_ADDRESS,
     USDCX_NAME,
     filmId,
@@ -352,8 +387,8 @@ export async function buyFilmTokens(
   });
 
   // Validate inputs
-  if (!CINEBLOCK_ADDRESS) {
-    throw new Error("CINEBLOCK_ADDRESS is not set. Check NEXT_PUBLIC_CONTRACT_ADDRESS env variable.");
+  if (!SHORTSTARTER_ADDRESS) {
+    throw new Error("SHORTSTARTER_ADDRESS is not set. Check NEXT_PUBLIC_CONTRACT_ADDRESS env variable.");
   }
   if (!userAddress) {
     throw new Error("User address is not provided");
@@ -408,7 +443,7 @@ export async function buyFilmTokensDemo(
   amount: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),
@@ -441,7 +476,7 @@ export async function transferFilmTokens(
   recipient: string,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),
@@ -467,7 +502,7 @@ export async function transferFilmTokens(
 }
 
 export async function addAdmin(newAdmin: string, userAddress: string): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.principal(newAdmin),
@@ -500,7 +535,7 @@ export async function setUsdcxContract(
   usdcxContractPrincipal: string,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
   const parts = usdcxContractPrincipal.split(".");
   const address = parts[0] ?? "";
   const contractNamePart = parts[1];
@@ -595,7 +630,7 @@ export async function claimRevenue(
   filmId: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),
@@ -626,7 +661,7 @@ export async function withdrawAndClaim(
   filmId: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),
@@ -658,7 +693,7 @@ export async function depositRevenue(
   amount: number,
   userAddress: string
 ): Promise<string> {
-  const contractId = `${CINEBLOCK_ADDRESS}.${CINEBLOCK_NAME}` as `${string}.${string}`;
+  const contractId = `${SHORTSTARTER_ADDRESS}.${SHORTSTARTER_NAME}` as `${string}.${string}`;
 
   const functionArgs = [
     Cl.uint(filmId),

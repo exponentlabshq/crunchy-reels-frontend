@@ -28,18 +28,18 @@ export const USDCX_MULTIPLIER = 1_000_000;
 
 export const CONTRACTS = {
   mainnet: {
-    // CineBlock Contract (update after mainnet deployment)
-    CINEBLOCK_ADDRESS: "",
-    CINEBLOCK_NAME: "cineblock",
+    // ShortStarter Contract (update after mainnet deployment)
+    SHORTSTARTER_ADDRESS: "",
+    SHORTSTARTER_NAME: "shortstarter",
     // USDCx Token on Mainnet
     USDCX_ADDRESS: USDCX.mainnet.ADDRESS,
     USDCX_NAME: USDCX.mainnet.NAME,
     USDCX_ASSET: USDCX.mainnet.ASSET,
   },
   testnet: {
-    // CineBlock Contract (update after testnet deployment)
-    CINEBLOCK_ADDRESS: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "",
-    CINEBLOCK_NAME: "cineblock",
+    // ShortStarter Contract (update after testnet deployment)
+    SHORTSTARTER_ADDRESS: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "",
+    SHORTSTARTER_NAME: "shortstarter",
     // USDCx Token on Testnet
     USDCX_ADDRESS: USDCX.testnet.ADDRESS,
     USDCX_NAME: USDCX.testnet.NAME,
@@ -56,8 +56,8 @@ export function getContractConfig() {
 
 const config = getContractConfig();
 
-export const CINEBLOCK_ADDRESS = config.CINEBLOCK_ADDRESS;
-export const CINEBLOCK_NAME = config.CINEBLOCK_NAME;
+export const SHORTSTARTER_ADDRESS = config.SHORTSTARTER_ADDRESS;
+export const SHORTSTARTER_NAME = config.SHORTSTARTER_NAME;
 export const USDCX_ADDRESS = config.USDCX_ADDRESS;
 export const USDCX_NAME = config.USDCX_NAME;
 export const USDCX_ASSET = config.USDCX_ASSET;
@@ -70,7 +70,7 @@ export const USDCX_ASSET_ID = `${USDCX_CONTRACT_ID}::${USDCX_ASSET}`;
 // CONTRACT FUNCTIONS (for reference)
 // ============================================
 
-export const CINEBLOCK_FUNCTIONS = {
+export const SHORTSTARTER_FUNCTIONS = {
   // Read-Only
   readOnly: [
     { name: "get-last-film-id", args: [] },
@@ -161,7 +161,7 @@ export const CINEBLOCK_FUNCTIONS = {
   ],
 };
 
-export const CINEBLOCK_MAPS = [
+export const SHORTSTARTER_MAPS = [
   { name: "films", keyType: "{ film-id: uint }" },
   { name: "token-balances", keyType: "{ film-id: uint, holder: principal }" },
   { name: "film-holder-count", keyType: "{ film-id: uint }" },
@@ -173,7 +173,7 @@ export const CINEBLOCK_MAPS = [
   { name: "user-total-claimed", keyType: "{ film-id: uint, holder: principal }" },
 ];
 
-export const CINEBLOCK_VARS = [
+export const SHORTSTARTER_VARS = [
   { name: "last-film-id", type: "uint" },
   { name: "total-usdcx-collected", type: "uint" },
   { name: "usdcx-contract-address", type: "(optional principal)" },

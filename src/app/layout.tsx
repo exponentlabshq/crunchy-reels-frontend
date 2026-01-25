@@ -6,15 +6,15 @@ import { Outfit, Space_Mono, DM_Mono, Instrument_Serif } from "next/font/google"
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "CineBlock - Tokenized Film Investment",
+  title: "ShortStarter - Tokenized Film Investment",
   description:
-    "CineBlock - Tokenized Film Investment on Bitcoin L2. Own a piece of cinema through blockchain technology.",
+    "ShortStarter - Tokenized Film Investment on Bitcoin L2. Own a piece of cinema through blockchain technology.",
   icons: [{ rel: "icon", url: "/icon.png" }],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "CineBlock",
+    title: "ShortStarter",
   },
 };
 

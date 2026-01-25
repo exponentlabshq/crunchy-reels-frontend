@@ -52,7 +52,7 @@ export function TabNavigation({ variant }: TabNavigationProps) {
             {/* Logo */}
             <div className="flex items-center gap-2.5 pb-4">
               <span className="text-white text-lg font-semibold font-mono tracking-[4px]">
-                CINEBLOCK
+                SHORTSTARTER
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
             </div>

@@ -1,6 +1,6 @@
-# CineBlock Frontend
+# ShortStarter Frontend
 
-A Next.js 15 application for CineBlock - a tokenized film investment platform on Bitcoin L2 (Stacks).
+A Next.js 15 application for ShortStarter - a tokenized film investment platform on Bitcoin L2 (Stacks).
 
 ## Tech Stack
 
@@ -37,7 +37,7 @@ cp .env.example .env.local
 # Stacks Network Configuration
 NEXT_PUBLIC_STACKS_NETWORK=testnet
 
-# CineBlock Contract Address (after deployment)
+# ShortStarter Contract Address (after deployment)
 NEXT_PUBLIC_CONTRACT_ADDRESS=
 ```
 
