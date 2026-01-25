@@ -420,7 +420,7 @@ function BridgeContent() {
           <AlertCircle className="w-4 h-4" />
           <AlertTitle>Please Be Patient:</AlertTitle>
           <AlertDescription>
-          After initiating the bridge, the Reserve attestation service will mint USDx to the recipient's Stacks wallet. <br/><span className="text-orange-400">This could take 5-30 minutes.</span>
+          After initiating the bridge, the Reserve attestation service will mint USDCx to the recipient's Stacks wallet. <br/><span className="text-orange-400">This could take 5-30 minutes.</span>
           </AlertDescription>
         </Alert>
 
