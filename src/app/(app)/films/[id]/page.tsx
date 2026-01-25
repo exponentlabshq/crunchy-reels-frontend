@@ -39,6 +39,8 @@ import {
 } from "@/utils/contractCalls";
 import { formatUSDCx, parseUSDCx } from "@/utils/contractConfig";
 import { NETWORK } from "@/constants";
+import { getFilmThumbnail, hasFilmMedia } from "@/data/filmMedia";
+import ShortsModal from "@/components/ShortsModal";
 
 interface FilmData {
   id: number;
@@ -208,7 +210,7 @@ export default function FilmDetailPage() {
 
       setTimeout(() => {
         fetchFilmData();
-      }, 3000);
+      }, 10000);
     } catch (err) {
       console.error("Investment error:", err);
       setInvestError(err instanceof Error ? err.message : "Transaction failed");
@@ -230,7 +232,7 @@ export default function FilmDetailPage() {
 
       setTimeout(() => {
         fetchFilmData();
-      }, 3000);
+      }, 10000);
     } catch (err) {
       console.error("Claim error:", err);
       setActionError(err instanceof Error ? err.message : "Claim failed");
@@ -252,7 +254,7 @@ export default function FilmDetailPage() {
 
       setTimeout(() => {
         fetchFilmData();
-      }, 3000);
+      }, 10000);
     } catch (err) {
       console.error("Withdraw error:", err);
       setActionError(err instanceof Error ? err.message : "Withdrawal failed");
@@ -261,7 +263,9 @@ export default function FilmDetailPage() {
     }
   }
 
-  const imageUri = FILM_IMAGES[(filmId - 1) % FILM_IMAGES.length] ?? FILM_IMAGES[0]!;
+  const hardcodedThumbnail = getFilmThumbnail(filmId);
+  const imageUri = hardcodedThumbnail ?? FILM_IMAGES[(filmId - 1) % FILM_IMAGES.length] ?? FILM_IMAGES[0]!;
+  const hasMedia = hasFilmMedia(filmId);
   const fundingPercent = film && film.maxSupply > 0 ? (film.tokensSold / film.maxSupply) * 100 : 0;
 
   if (isLoading) {
@@ -303,8 +307,8 @@ export default function FilmDetailPage() {
   }
 
   return (
-    <div className="flex-1 overflow-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
-      {/* Hero Section */}
+    <div className="flex-1 overflow-auto pb-24 lg:pb-8">
+      {/* Hero Section - Full width */}
       <div className="relative h-[45vh] min-h-[400px] max-h-[500px] w-full">
         <Image src={imageUri} alt={film.title} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-background-0 via-background-0/70 to-background-0/30" />
@@ -322,8 +326,8 @@ export default function FilmDetailPage() {
         </div>
 
         {/* Hero Content */}
-        <div className="absolute bottom-0 top-10 left-0 right-0 p-6 md:p-10">
-          <div className="max-w-5xl mx-auto">
+        <div className="absolute bottom-0 top-10 left-14 right-0 px-6 py-6 md:py-10">
+          <div className="max-w-7xl mx-auto">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="px-4 py-1.5 bg-primary-500 text-white text-sm font-semibold rounded-full shadow-lg shadow-primary-500/30">
                 ${film.symbol}
@@ -349,12 +353,17 @@ export default function FilmDetailPage() {
                 {film.producer.slice(0, 8)}...{film.producer.slice(-6)}
               </code>
             </div>
+            {hasMedia && (
+              <div className="mt-4">
+                <ShortsModal filmId={filmId} filmTitle={film.title} />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-10 -mt-40">
+      <div className="max-w-7xl mx-auto px-6 py-10 -mt-40">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left Column - Film Details (3 cols) */}
           <div className="lg:col-span-3 space-y-8">

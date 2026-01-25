@@ -112,7 +112,7 @@ export function TabNavigation({ variant }: TabNavigationProps) {
                     </span>
                   </div>
                 </div>
-                <ChevronDown className="w-4 h-4 text-[#6B6B70]" />
+            
               </div>
             ) : (
               <Link

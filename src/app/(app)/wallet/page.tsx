@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Wallet as WalletIcon, LogOut, Power, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Copy, Wallet as WalletIcon, LogOut, Power, ChevronRight, ArrowUpRight, ExternalLink, Github, FileCode2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
@@ -264,7 +264,77 @@ export default function WalletPage() {
           </div>
         </div>
 
-  
+        {/* Developer Resources Section */}
+        <div className="bg-[#111113] border border-[#1F1F23] rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-[10px] bg-[#5546FF]/10 flex items-center justify-center">
+              <FileCode2 className="w-5 h-5 text-[#5546FF]" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-white">Developer Resources</span>
+              <span className="text-xs text-[#6B6B70]">Smart contract & source code</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            {/* Contract Explorer Link */}
+            <a
+              href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.shortstarter?chain=testnet"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6558f9]/50 hover:bg-[#6558f9]/5 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#5546FF]/10 flex items-center justify-center">
+                  <span className="text-[#6558f9] text-xs font-bold">S</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-medium text-white">ShortStarter Contract Blockchain Explorer</span>
+                  <span className="text-[11px] text-[#6B6B70]">View on Hiro Explorer · Testnet</span>
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-[#6558f9] transition-colors" />
+            </a>
+
+            {/* Contract GitHub Link */}
+            <a
+              href="https://github.com/aydendevnova/shortstarter-usdcx-contracts"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#2A2A2E] flex items-center justify-center">
+                  <Github className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-medium text-white">Smart Contracts Source Code</span>
+                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-contracts</span>
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
+            </a>
+
+            {/* Frontend GitHub Link */}
+            <a
+              href="https://github.com/aydendevnova/shortstarter-usdcx-frontend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#2A2A2E] flex items-center justify-center">
+                  <Github className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-medium text-white">Frontend Application Source Code</span>
+                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-frontend</span>
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

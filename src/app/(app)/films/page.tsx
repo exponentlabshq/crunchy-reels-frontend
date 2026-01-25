@@ -9,17 +9,17 @@ import {
   Search,
   SlidersHorizontal,
   Plus,
-  Star,
-  Zap,
   Timer,
   ChevronRight,
   Clapperboard,
-  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { getLastFilmId, getFilm, getTotalUsdcxCollected } from "@/utils/contractCalls";
 import { formatUSDCx } from "@/utils/contractConfig";
+import { getFilmThumbnail, hasFilmMedia } from "@/data/filmMedia";
+import { ShortsButton } from "@/components/ShortsModal";
 
 interface Film {
   id: number;
@@ -147,7 +147,7 @@ export default function FilmsPage() {
 
 
   return (
-    <div className="flex-1 bg-[#0A0A0B] overflow-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
+    <div className="flex-1 overflow-auto pb-24 lg:pb-8 max-w-7xl mx-auto">
       <div className="py-8 px-10">
         {/* Page Header */}
         <div className="flex flex-col gap-2 mb-7">
@@ -165,10 +165,7 @@ export default function FilmsPage() {
                 <SlidersHorizontal className="w-4 h-4 text-[#8B8B90]" />
                 <span className="text-[13px] font-medium text-white">Filter</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-primary-500 cursor-not-allowed rounded-lg transition-colors " disabled>
-                <Plus className="w-4 h-4 text-white" />
-                <span className="text-[13px] font-medium text-white">Submit Project</span>
-              </button>
+       
             </div>
           </div>
           {/* Breadcrumbs */}
@@ -313,15 +310,31 @@ export default function FilmsPage() {
                 const goalAmount = film.maxSupply;
                 const minInvestment = Math.max(25, Math.floor(goalAmount * 0.001));
                 const iconColor = index % 3 === 0 ? "text-primary-500" : index % 3 === 1 ? "text-success-500" : "text-[#4A4A4E]";
+                const thumbnail = getFilmThumbnail(film.id);
+                const hasMedia = hasFilmMedia(film.id);
 
                 return (
                   <div
                     key={film.id}
                     className="bg-[#111113] border border-[#1F1F23] rounded-xl overflow-hidden hover:border-[#2A2A2E] transition-all"
                   >
-                    {/* Gradient Header */}
-                    <div className={`h-[140px] bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-                      <Clapperboard className={`w-8 h-8 ${iconColor}`} />
+                    {/* Thumbnail or Gradient Header */}
+                    <div className="relative h-[240px]">
+                      {thumbnail ? (
+                        <>
+                          <Image
+                            src={thumbnail}
+                            alt={film.title}
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        </>
+                      ) : (
+                        <div className={`h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+                          <Clapperboard className={`w-8 h-8 ${iconColor}`} />
+                        </div>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -365,22 +378,29 @@ export default function FilmsPage() {
                         />
                       </div>
 
-                      {/* Action Button */}
-                      <Link href={`/films/${film.id}`} className="block">
-                        {isFullyFunded ? (
-                          <button className="w-full py-2.5 bg-success-500/10 text-success-500 text-sm font-medium rounded-lg">
-                            Fully Funded
-                          </button>
-                        ) : film.isActive ? (
-                          <button className="w-full py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">
-                            View More
-                          </button>
-                        ) : (
-                          <button className="w-full py-2.5 border border-[#2A2A2E] text-[#ADADB0] text-sm font-medium rounded-lg hover:bg-[#1A1A1D] transition-colors">
-                            View Details <ArrowRight className="w-4 h-4" />
-                          </button>
+                      {/* Action Buttons */}
+                      <div className="flex gap-2">
+                        {hasMedia && (
+                          <div className="flex-1">
+                            <ShortsButton filmId={film.id} filmTitle={film.title} variant="card-primary" />
+                          </div>
                         )}
-                      </Link>
+                        <Link href={`/films/${film.id}`} className={hasMedia ? "flex-1" : "w-full block"}>
+                          {isFullyFunded ? (
+                            <button className="w-full py-2.5 bg-success-500/10 text-success-500 text-sm font-medium rounded-lg">
+                              Fully Funded
+                            </button>
+                          ) : (
+                            <button className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                              hasMedia 
+                                ? "border border-[#2A2A2E] text-[#ADADB0] hover:bg-[#1A1A1D]" 
+                                : "bg-primary-500 hover:bg-primary-600 text-white"
+                            }`}>
+                              View More
+                            </button>
+                          )}
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );
