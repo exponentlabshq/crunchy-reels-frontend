@@ -39,7 +39,7 @@ function ShortsModalContent({
         shorts.push({
           ...short,
           filmId: film.filmId,
-          filmTitle: `Film #${film.filmId}`,
+          filmTitle: `Anime #${film.filmId}`,
           globalIndex: globalIndex++,
         })
       })
@@ -507,7 +507,7 @@ function ShortsModalContent({
                 }`}
               >
                 <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
-                  Film #{currentShort.filmId}
+                  Anime #{currentShort.filmId}
                 </p>
                 <h2 className="text-white font-semibold text-base md:text-lg">{currentShort.title}</h2>
                 <p className="text-white/60 text-sm">{currentShort.duration}</p>
@@ -630,7 +630,7 @@ function ShortsModalContent({
 
             <div className="flex flex-col items-center gap-1">
               <Film className="w-5 h-5 text-white/60" />
-              <span className="text-white/60 text-xs">Film</span>
+              <span className="text-white/60 text-xs">Anime</span>
             </div>
 
             <button
@@ -668,7 +668,7 @@ function VideoOverlay({ short, showControls }: { short: AllShort | undefined; sh
       }`}
     >
       <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
-        Film #{short.filmId}
+        Anime #{short.filmId}
       </p>
       <h2 className="text-white font-semibold text-base md:text-lg">{short.title}</h2>
       <p className="text-white/60 text-sm">{short.duration}</p>

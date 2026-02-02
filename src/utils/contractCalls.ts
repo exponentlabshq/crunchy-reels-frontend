@@ -107,7 +107,7 @@ export function parseReadOnlyResult(result: { okay?: boolean; result?: string })
 }
 
 // ============================================
-// SHORTSTARTER - READ ONLY CALLS
+// CRUNCHYREELS - READ ONLY CALLS
 // ============================================
 
 export async function getLastFilmId() {
@@ -265,7 +265,7 @@ export async function getUserPosition(filmId: number, holder: string) {
 }
 
 // ============================================
-// SHORTSTARTER - WRITE CALLS (using Cl.* for @stacks/connect)
+// CRUNCHYREELS - WRITE CALLS (using Cl.* for @stacks/connect)
 // ============================================
 
 export async function createFilm(

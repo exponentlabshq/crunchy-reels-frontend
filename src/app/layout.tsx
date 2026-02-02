@@ -6,15 +6,15 @@ import { Outfit, Space_Mono, DM_Mono, Instrument_Serif } from "next/font/google"
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "ShortStarter - Tokenized Film Investment",
+  title: "CrunchyReels - Anime Short-Form Video Investment",
   description:
-    "ShortStarter - Tokenized Film Investment on Bitcoin L2. Own a piece of cinema through blockchain technology.",
+    "CrunchyReels - Anime Short-Form Video Investment on Bitcoin L2. Support anime creators and own a piece of the content you love.",
   icons: [{ rel: "icon", url: "/icon.png" }],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "ShortStarter",
+    title: "CrunchyReels",
   },
 };
 

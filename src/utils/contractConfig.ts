@@ -28,18 +28,18 @@ export const USDCX_MULTIPLIER = 1_000_000;
 
 export const CONTRACTS = {
   mainnet: {
-    // ShortStarter Contract (update after mainnet deployment)
+    // CrunchyReels Contract (update after mainnet deployment)
     SHORTSTARTER_ADDRESS: "",
-    SHORTSTARTER_NAME: "shortstarter",
+    SHORTSTARTER_NAME: "crunchyreels",
     // USDCx Token on Mainnet
     USDCX_ADDRESS: USDCX.mainnet.ADDRESS,
     USDCX_NAME: USDCX.mainnet.NAME,
     USDCX_ASSET: USDCX.mainnet.ASSET,
   },
   testnet: {
-    // ShortStarter Contract (update after testnet deployment)
+    // CrunchyReels Contract (update after testnet deployment)
     SHORTSTARTER_ADDRESS: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "",
-    SHORTSTARTER_NAME: "shortstarter",
+    SHORTSTARTER_NAME: "crunchyreels",
     // USDCx Token on Testnet
     USDCX_ADDRESS: USDCX.testnet.ADDRESS,
     USDCX_NAME: USDCX.testnet.NAME,
