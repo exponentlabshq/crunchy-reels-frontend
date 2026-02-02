@@ -100,8 +100,8 @@ export default function WalletPage() {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Demo Mode Active</h3>
                 <p className="text-sm text-[#6B6B70] mb-4">
-                  You&apos;re exploring ShortStarter in demo mode. To view your wallet balance, 
-                  invest in films, and access all features, connect your Stacks wallet.
+                  You&apos;re exploring CrunchyReels in demo mode. To view your wallet balance,
+                  invest in anime content, and access all features, connect your Stacks wallet.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
@@ -131,8 +131,8 @@ export default function WalletPage() {
                   <span className="text-success-500 text-sm">✓</span>
                 </div>
                 <div>
-                  <p className="text-sm text-white font-medium">Browse Film Projects</p>
-                  <p className="text-xs text-[#6B6B70]">Explore all available films and their details</p>
+                  <p className="text-sm text-white font-medium">Browse Anime Projects</p>
+                  <p className="text-xs text-[#6B6B70]">Explore all available anime content and their details</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -141,7 +141,7 @@ export default function WalletPage() {
                 </div>
                 <div>
                   <p className="text-sm text-white font-medium">View Funding Progress</p>
-                  <p className="text-xs text-[#6B6B70]">See how much each film has raised</p>
+                  <p className="text-xs text-[#6B6B70]">See how much each project has raised</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -149,7 +149,7 @@ export default function WalletPage() {
                   <span className="text-error-500 text-sm">✕</span>
                 </div>
                 <div>
-                  <p className="text-sm text-white font-medium">Invest in Films</p>
+                  <p className="text-sm text-white font-medium">Invest in Anime</p>
                   <p className="text-xs text-[#6B6B70]">Requires wallet connection</p>
                 </div>
               </div>
@@ -179,17 +179,17 @@ export default function WalletPage() {
             
             <div className="flex flex-col gap-3">
               <a
-                href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.shortstarter?chain=testnet"
+                href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.crunchyreels?chain=testnet"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6558f9]/50 hover:bg-[#6558f9]/5 transition-all"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-[#5546FF]/10 flex items-center justify-center">
-                    <span className="text-[#6558f9] text-xs font-bold">S</span>
+                    <span className="text-[#6558f9] text-xs font-bold">C</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[13px] font-medium text-white">ShortStarter Contract Blockchain Explorer</span>
+                    <span className="text-[13px] font-medium text-white">CrunchyReels Contract Blockchain Explorer</span>
                     <span className="text-[11px] text-[#6B6B70]">View on Hiro Explorer · Testnet</span>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ export default function WalletPage() {
               </a>
 
               <a
-                href="https://github.com/aydendevnova/shortstarter-usdcx-contracts"
+                href="https://github.com/crunchyreels/crunchyreels-contracts"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
@@ -208,7 +208,7 @@ export default function WalletPage() {
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[13px] font-medium text-white">Smart Contracts Source Code</span>
-                    <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-contracts</span>
+                    <span className="text-[11px] text-[#6B6B70]">crunchyreels-contracts</span>
                   </div>
                 </div>
                 <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
@@ -217,7 +217,7 @@ export default function WalletPage() {
 
             {/* Frontend GitHub Link */}
             <a
-              href="https://github.com/aydendevnova/shortstarter-usdcx-frontend"
+              href="https://github.com/crunchyreels/crunchyreels-frontend"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
@@ -228,7 +228,7 @@ export default function WalletPage() {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[13px] font-medium text-white">Frontend Application Source Code</span>
-                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-frontend</span>
+                  <span className="text-[11px] text-[#6B6B70]">crunchyreels-frontend</span>
                 </div>
               </div>
               <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
@@ -458,17 +458,17 @@ export default function WalletPage() {
           <div className="flex flex-col gap-3">
             {/* Contract Explorer Link */}
             <a
-              href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.shortstarter?chain=testnet"
+              href="https://explorer.hiro.so/txid/STGY69C09ZANPYW5V9M3DMRVETGZ9EY9VZRSCJGN.crunchyreels?chain=testnet"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6558f9]/50 hover:bg-[#6558f9]/5 transition-all"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#5546FF]/10 flex items-center justify-center">
-                  <span className="text-[#6558f9] text-xs font-bold">S</span>
+                  <span className="text-[#6558f9] text-xs font-bold">C</span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-medium text-white">ShortStarter Contract Blockchain Explorer</span>
+                  <span className="text-[13px] font-medium text-white">CrunchyReels Contract Blockchain Explorer</span>
                   <span className="text-[11px] text-[#6B6B70]">View on Hiro Explorer · Testnet</span>
                 </div>
               </div>
@@ -477,7 +477,7 @@ export default function WalletPage() {
 
             {/* Contract GitHub Link */}
             <a
-              href="https://github.com/aydendevnova/shortstarter-usdcx-contracts"
+              href="https://github.com/crunchyreels/crunchyreels-contracts"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
@@ -488,7 +488,7 @@ export default function WalletPage() {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[13px] font-medium text-white">Smart Contracts Source Code</span>
-                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-contracts</span>
+                  <span className="text-[11px] text-[#6B6B70]">crunchyreels-contracts</span>
                 </div>
               </div>
               <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />
@@ -496,7 +496,7 @@ export default function WalletPage() {
 
             {/* Frontend GitHub Link */}
             <a
-              href="https://github.com/aydendevnova/shortstarter-usdcx-frontend"
+              href="https://github.com/crunchyreels/crunchyreels-frontend"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-between bg-[#1A1A1D] border border-[#2A2A2E] rounded-lg px-4 py-3.5 hover:border-[#6B6B70]/50 hover:bg-[#1F1F23] transition-all"
@@ -507,7 +507,7 @@ export default function WalletPage() {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[13px] font-medium text-white">Frontend Application Source Code</span>
-                  <span className="text-[11px] text-[#6B6B70]">shortstarter-usdcx-frontend</span>
+                  <span className="text-[11px] text-[#6B6B70]">crunchyreels-frontend</span>
                 </div>
               </div>
               <ExternalLink className="w-4 h-4 text-[#6B6B70] group-hover:text-white transition-colors" />

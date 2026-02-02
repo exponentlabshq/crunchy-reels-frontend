@@ -1,6 +1,6 @@
-# ShortStarter Frontend
+# CrunchyReels Frontend
 
-A Next.js 15 application for ShortStarter - a tokenized film investment platform on Bitcoin L2 (Stacks).
+A Next.js 15 application for CrunchyReels - a tokenized anime short-form video investment platform on Bitcoin L2 (Stacks). Support your favorite anime creators through blockchain technology.
 
 ## Tech Stack
 
@@ -37,7 +37,7 @@ cp .env.example .env.local
 # Stacks Network Configuration
 NEXT_PUBLIC_STACKS_NETWORK=testnet
 
-# ShortStarter Contract Address (after deployment)
+# CrunchyReels Contract Address (after deployment)
 NEXT_PUBLIC_CONTRACT_ADDRESS=
 ```
 
@@ -114,7 +114,7 @@ frontend/
 
 ## Features
 
-- **Film Investment**: Browse and invest in tokenized film projects
+- **Anime Investment**: Browse and invest in tokenized anime short-form content
 - **USDCx Integration**: Invest using Circle's bridged stablecoin
 - **Wallet Management**: Connect Stacks wallet, view balances
 - **Demo Mode**: Explore the app without a wallet

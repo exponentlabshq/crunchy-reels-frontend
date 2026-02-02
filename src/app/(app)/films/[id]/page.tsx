@@ -372,7 +372,7 @@ export default function FilmDetailPage() {
             <section>
               <h2 className="text-xl font-semibold text-typography-950 mb-4 flex items-center gap-2">
                 <FilmIcon className="w-5 h-5 text-primary-500" />
-                About This Film
+                About This Anime
               </h2>
               <div className="bg-background-100/50 backdrop-blur-sm border border-background-300/50 rounded-2xl p-6">
                 <p className="text-typography-300 leading-relaxed text-base">{film.description}</p>
@@ -541,7 +541,7 @@ export default function FilmDetailPage() {
               <div className="bg-background-100/80 backdrop-blur-xl border border-background-300/50 rounded-2xl overflow-hidden">
                 <div className="bg-gradient-to-r from-primary-500/10 to-primary-600/5 border-b border-background-300/50 p-5">
                   <h2 className="text-lg font-semibold text-typography-950">Invest in ${film.symbol}</h2>
-                  <p className="text-sm text-typography-400 mt-1">Become a stakeholder in this film</p>
+                  <p className="text-sm text-typography-400 mt-1">Become a stakeholder in this anime project</p>
                 </div>
 
                 <div className="p-5">
@@ -552,7 +552,7 @@ export default function FilmDetailPage() {
                       </div>
                       <p className="text-typography-950 font-semibold mb-2">Demo Mode</p>
                       <p className="text-typography-400 text-sm mb-6">
-                        Connect a wallet to invest in this film and access all features.
+                        Connect a wallet to invest in this anime project and access all features.
                       </p>
                       <button
                         onClick={() => {
@@ -582,7 +582,7 @@ export default function FilmDetailPage() {
                       <div className="w-16 h-16 rounded-full bg-warning-500/10 flex items-center justify-center mx-auto mb-4">
                         <AlertCircle className="w-8 h-8 text-warning-500" />
                       </div>
-                      <p className="text-typography-400">This film&apos;s funding period has ended</p>
+                      <p className="text-typography-400">This anime project&apos;s funding period has ended</p>
                     </div>
                   ) : (
                     <div className="space-y-5">

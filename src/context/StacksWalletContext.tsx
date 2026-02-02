@@ -16,7 +16,7 @@ import {
 } from "@stacks/connect";
 import { IS_MAINNET } from "@/constants";
 
-const DEMO_MODE_KEY = "shortstarter_demo_mode";
+const DEMO_MODE_KEY = "crunchyreels_demo_mode";
 
 interface StacksWalletState {
   isConnected: boolean;

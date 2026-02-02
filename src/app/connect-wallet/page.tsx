@@ -32,7 +32,7 @@ export default function ConnectWalletPage() {
             Connect Your Wallet
           </h1>
           <p className="text-typography-300 text-base max-w-sm mx-auto">
-            Connect your Stacks wallet to invest in tokenized film projects on Bitcoin L2
+            Connect your Stacks wallet to invest in anime short-form content on Bitcoin L2
           </p>
         </div>
 
@@ -43,9 +43,9 @@ export default function ConnectWalletPage() {
               <Film className="w-5 h-5 text-primary-500" />
             </div>
             <div>
-              <h3 className="text-typography-950 font-medium text-sm">Invest in Films</h3>
+              <h3 className="text-typography-950 font-medium text-sm">Invest in Anime Creators</h3>
               <p className="text-typography-400 text-xs">
-                Own tokenized shares of film projects. Be part of cinema history.
+                Own tokenized shares of anime short-form content. Support the creators you love.
               </p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function ConnectWalletPage() {
           </button>
 
           <p className="text-center text-typography-500 text-xs mt-3">
-            Demo mode lets you explore films without a wallet.
+            Demo mode lets you explore anime content without a wallet.
             <br />
             <span className="text-typography-400">Some features will be limited.</span>
           </p>

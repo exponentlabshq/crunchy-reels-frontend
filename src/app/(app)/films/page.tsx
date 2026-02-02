@@ -154,10 +154,10 @@ export default function FilmsPage() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5 sm:gap-2">
               <h1 className="text-2xl sm:text-[38px] font-normal text-white font-display tracking-[-0.5px] sm:tracking-[-1px]">
-                Film Investments
+                Anime Investments
               </h1>
               <p className="text-xs sm:text-sm text-[#6B6B70] hidden sm:block">
-                Browse and invest in upcoming film projects
+                Browse and invest in anime creators and short-form content
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export default function FilmsPage() {
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs text-[#6B6B70]">Dashboard</span>
             <ChevronRight className="w-3.5 h-3.5 text-[#4A4A4E]" />
-            <span className="text-xs text-white">Films</span>
+            <span className="text-xs text-white">Anime</span>
           </div>
         </div>
 
@@ -246,7 +246,7 @@ export default function FilmsPage() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6B70]" />
           <Input
             type="text"
-            placeholder="Search films, directors, genres..."
+            placeholder="Search anime, creators, genres..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-11 w-full bg-[#111113] border-[#2A2A2E] pl-10 text-[13px] text-white placeholder:text-[#4A4A4E] focus-visible:ring-primary-500/20 focus-visible:border-[#3A3A3E]"
@@ -259,7 +259,7 @@ export default function FilmsPage() {
         <div className="flex flex-col gap-5">
           {/* Section Header */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">Featured Film Projects</span>
+            <span className="text-sm font-semibold text-white">Featured Anime Projects</span>
             <Link href="/films" className="text-xs text-primary-500 hover:text-primary-400 transition-colors">
               View All →
             </Link>
@@ -269,7 +269,7 @@ export default function FilmsPage() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-10 h-10 text-primary-500 animate-spin mb-4" />
-              <p className="text-[#6B6B70]">Loading films from contract...</p>
+              <p className="text-[#6B6B70]">Loading anime projects from contract...</p>
             </div>
           )}
 
@@ -291,9 +291,9 @@ export default function FilmsPage() {
           {!isLoading && !error && films.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20">
               <FilmIcon className="w-16 h-16 text-[#6B6B70] mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No Films Yet</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">No Anime Projects Yet</h3>
               <p className="text-[#6B6B70] text-center max-w-md">
-                No films have been created on the contract yet. Check back soon or create one if
+                No anime projects have been created on the contract yet. Check back soon or create one if
                 you&apos;re an admin.
               </p>
             </div>

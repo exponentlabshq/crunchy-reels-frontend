@@ -206,7 +206,7 @@ export default function ContractTesterPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-typography-950">Contract Tester</h1>
-              <p className="text-xs text-emerald-500 font-medium">ShortStarter • USDCx on Stacks</p>
+              <p className="text-xs text-emerald-500 font-medium">CrunchyReels • USDCx on Stacks</p>
             </div>
           </div>
         
@@ -221,7 +221,7 @@ export default function ContractTesterPage() {
         {contractAddress.length === 0 && (
           <div className="mb-4">
             <p className="text-xs text-red-500 font-mono bg-red-500/10 px-3 py-2 rounded-lg">
-              No contract address found for ShortStarter
+              No contract address found for CrunchyReels
             </p>
           </div>
         )}
@@ -232,7 +232,7 @@ export default function ContractTesterPage() {
               onChange={(e) => setSelectedContract(e.target.value as "shortstarter" | "usdcx")}
               className="appearance-none bg-background-0 border border-background-300 rounded-lg px-3 py-2 text-sm text-typography-950 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer"
             >
-              <option value="shortstarter">🎬 ShortStarter</option>
+              <option value="shortstarter">🎬 CrunchyReels</option>
               <option value="usdcx">💵 USDCx</option>
             </select>
             <code className="flex-1 text-xs text-typography-500 font-mono truncate bg-background-0 px-3 py-2 rounded-lg border border-background-200">

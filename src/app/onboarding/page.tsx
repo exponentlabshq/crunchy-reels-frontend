@@ -12,9 +12,9 @@ import onboarding3 from "@/../assets/images/onboarding/3.png";
 const slides = [
   {
     image: onboarding1,
-    title: "Invest in Cinema",
+    title: "Invest in Anime",
     subtitle:
-      "Own tokenized shares of film projects. From indie films to blockbusters, be part of the stories that move the world.",
+      "Own tokenized shares of anime short-form content. From indie creators to top animators, be part of the stories that inspire the community.",
   },
   {
     image: onboarding2,
@@ -26,7 +26,7 @@ const slides = [
     image: onboarding3,
     title: "Earn & Trade",
     subtitle:
-      "Receive returns from film profits. Trade your tokens anytime. The future of film investment is here.",
+      "Receive returns from content revenue. Trade your tokens anytime. The future of anime creator support is here.",
   },
 ];
 
@@ -81,7 +81,7 @@ export default function OnboardingPage() {
  
  <div className="flex items-center w-fit mx-auto gap-2.5 pb-4 mt-12">
               <span className="text-white text-2xl  font-semibold font-mono tracking-[4px]">
-                SHORTSTARTER
+                CRUNCHYREELS
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
        </div>
